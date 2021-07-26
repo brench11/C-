@@ -2,14 +2,23 @@
 #include<conio.h>
 int main()
 {
-	initgraph(640, 256);
-	for (int y = 0; y < 256; y++)	
+	initgraph(640, 640);
+	
+	for (int i = 3; i < 640; i++)
 	{
-		setcolor(RGB(0, y, y));
-		line(0, y, 640, y);
+		for (int j = 3; j < 259; j++)
+		{ 
+			if (i < 259)
+			{
+				putpixel(j, i, RGB(0, i, j));
+			}
+			else
+			{
+				putpixel(j, i, RGB(0, j, 0));
+			}
+		}
 	}
 	_getch();
 	closegraph();
 	return 0;
-
 }
