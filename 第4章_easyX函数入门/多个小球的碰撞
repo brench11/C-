@@ -2,22 +2,22 @@
 #include<conio.h>
 #define High 480
 #define Width 640
-#define BallNum 5
+#define BallNum 7
 int main()
 {
 	double ball_x[BallNum], ball_y[BallNum];
 	double ball_vx[BallNum], ball_vy[BallNum];
-	double radius;
+	int radius;
 
-	int i;
+	int i,j;
 	radius = 20;
 
 	for (i = 0; i < BallNum; i++)
 	{
-		ball_x[i] = (i + 2) * radius * 3;
-		ball_y[i] = High / 2;
-		ball_vx[i] = 1;
-		ball_vy[i] = 1;
+		ball_x[i] = rand() % (Width - 4 * radius) + 2 * radius;
+		ball_y[i] = rand() % (High - 4 * radius) + 2 * radius;
+		ball_vx[i] = (rand() % 2) * 2 - 1;
+		ball_vy[i] = (rand() % 2) * 2 - 1;
 	}
 	initgraph(Width, High);
 	BeginBatchDraw();
@@ -32,13 +32,55 @@ int main()
 		{
 			ball_x[i] = ball_x[i] + ball_vx[i];
 			ball_y[i] = ball_y[i] + ball_vy[i];
+			if (ball_x[i] < radius)
+				ball_x[i] = radius;
+			if (ball_y[i] < radius)
+				ball_y[i] = radius;
+			if (ball_x[i] > Width - radius)
+				ball_x[i] = Width - radius;
+			if (ball_y[i] > High - radius)
+				ball_y[i] = High - radius;
 		}
 		for (i = 0; i < BallNum; i++)
 		{
 			if (ball_x[i] <= radius || (ball_x[i] >= Width - radius))
 				ball_vx[i] = -ball_vx[i];
-			if (ball_y[i] < radius || (ball_y[i] >= High - radius))
+			if (ball_y[i] <= radius || (ball_y[i] >= High - radius))
 				ball_vy[i] = -ball_vy[i];
+		}
+		double minDis[BallNum][2];
+		for (i = 0; i < BallNum; i++)
+		{
+			minDis[i][0] = 9999999999.0;
+			minDis[i][1] = -1;
+		}
+		for (i = 0; i < BallNum; i++)
+		{
+			for (j = 0; j < BallNum; j++)
+			{
+				if (i != j) //自己不需要和自己比较;
+				{
+					double dist2;
+					dist2 = (ball_x[i] - ball_x[j]) * (ball_x[i] - ball_x[j]) + (ball_y[i] - ball_y[j]) * (ball_y[i] - ball_y[j]);
+					if (dist2 < minDis[i][0])
+					{
+						minDis[i][0] = dist2;
+						minDis[i][1] = j;
+					}
+				}
+			}
+		}
+		for (i = 0; i < BallNum; i++)
+		{
+			if (minDis[i][0] <= 4 * radius * radius)
+			{
+				j = minDis[i][1];
+				int temp;
+				temp = ball_vx[i]; ball_vx[i] = ball_vx[j]; ball_vx[j] = temp;
+				temp = ball_vy[i]; ball_vy[i] = ball_vy[j]; ball_vy[j] = temp;
+				minDis[j][0] = 999999999.00;
+				minDis[j][1] = -1;
+			}
 		}
 		setcolor(YELLOW);
 		setfillcolor(GREEN);
