@@ -1,0 +1,20 @@
+#include<graphics.h>
+#include<conio.h>
+int main()
+{
+	initgraph(640, 640);
+	for (int x = 0; x < 500; x += 5)
+	{
+		setcolor(YELLOW);
+		setfillcolor(GREEN);
+		fillcircle(x, 100, 20);
+		Sleep(10);
+		setcolor(BLACK);
+		setfillcolor(BLACK);
+		fillcircle(x, 100, 20);
+
+	}
+	_getch();
+	closegraph();
+	return 0;
+}
