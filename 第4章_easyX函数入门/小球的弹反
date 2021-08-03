@@ -1,0 +1,36 @@
+#include<graphics.h>
+#include<conio.h>
+#define High 480
+#define Width 640
+int main()
+{
+	double ball_x, ball_y;
+	double ball_vx, ball_vy;
+	double radius;
+
+	initgraph(Width, High);
+	ball_x = Width / 2;
+	ball_y = High / 2;
+	ball_vx = 1;
+	ball_vy = 1;
+	radius = 20;
+	while (1)
+	{
+		setcolor(BLACK);
+		setfillcolor(BLACK);
+		fillcircle(ball_x, ball_y, radius);
+		ball_x = ball_x + ball_vx;
+		ball_y = ball_y + ball_vy;
+
+		if (ball_x <= radius || (ball_x >= Width - radius))
+			ball_vx = -ball_vx;
+		if (ball_y <= radius || (ball_y >= High - radius))
+			ball_vy = -ball_vy;
+		setcolor(RED);
+		setfillcolor(GREEN);
+		fillcircle(ball_x, ball_y, radius);
+		Sleep(5);
+	}
+	closegraph();
+	return 0;
+}
