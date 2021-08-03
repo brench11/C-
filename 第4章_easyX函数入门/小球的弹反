@@ -14,6 +14,7 @@ int main()
 	ball_vx = 1;
 	ball_vy = 1;
 	radius = 20;
+	BeginBatchDraw();
 	while (1)
 	{
 		setcolor(BLACK);
@@ -29,8 +30,10 @@ int main()
 		setcolor(RED);
 		setfillcolor(GREEN);
 		fillcircle(ball_x, ball_y, radius);
+		FlushBatchDraw();
 		Sleep(5);
 	}
+	EndBatchDraw();
 	closegraph();
 	return 0;
 }
