@@ -1,0 +1,283 @@
+#include<graphics.h>
+#include<conio.h>
+#define Width 750
+#define High 900
+#define brick_size 16
+struct brick {
+	int brick_x;
+	int brick_y;
+	int brick_left = brick_x - brick_size / 2;
+	int brick_right = brick_x + brick_size / 2;
+	int brick_top = brick_y - brick_size / 2;
+	int brick_bottom = brick_y + brick_size / 2;
+	int exist;
+};
+struct ball {
+	double ball_x, ball_y;
+	double ball_vx, ball_vy;
+	int exist;
+};
+int ball_number = 1;
+int brick_number = 300;
+struct ball balls[100];
+struct brick bricks[300];
+int radius;
+int bar_x, bar_y;
+int bar_high, bar_width;
+int bar_left, bar_right, bar_top, bar_bottom;
+
+int BEGIN = 0;
+int playStyle = 1;//默认鼠标玩法
+double dis(double a, double b, int c, int d)
+{
+	return (a - c) * (a - c) + (b - d) * (b - d);
+}
+double randx() //()返回0.5 1 1.5 2
+{
+	int a = (rand() % 4);
+	if (a == 0) return 0.5;
+	if (a == 1) return 1.0;
+	if (a == 2) return 1.5;
+	if (a == 3) return 2.0;
+}
+void startup()
+{
+	bar_width = 120;
+	bar_high = 25;
+	bar_x = Width / 2;
+	bar_y = High - bar_high / 2;
+	bar_left = bar_x - bar_width / 2;
+	bar_right = bar_x + bar_width / 2;
+	bar_top = bar_y - bar_high / 2;
+	bar_bottom = bar_y + bar_high / 2;
+
+	balls[0].ball_x = bar_x;
+	balls[0].ball_y = bar_top - 12;
+	radius = 6;
+	balls[0].ball_vx = 1.0;
+	balls[0].ball_vy = 1.0;
+	balls[0].exist = 1;
+	//初始化砖块;
+	int current_x = 6, current_y = 6;
+	for (int i = 1; i <= brick_number; i++)
+	{
+		if (i % 18 == 0){
+			current_y += 40;
+			current_x = 6;
+		}
+		else {
+			current_x += 40;
+		}
+		bricks[i - 1].brick_x = current_x;
+		bricks[i - 1].brick_y = current_y;
+		bricks[i - 1].brick_left = bricks[i - 1].brick_x - brick_size / 2;
+		bricks[i - 1].brick_right = bricks[i - 1].brick_x + brick_size / 2;
+		bricks[i - 1].brick_bottom = bricks[i - 1].brick_y + brick_size / 2;
+		bricks[i - 1].brick_top = bricks[i - 1].brick_y - brick_size / 2;
+		bricks[i - 1].exist = 1;
+	}
+
+	initgraph(Width, High);
+	BeginBatchDraw();
+
+}
+void clean()
+{
+	setcolor(BLACK);
+	setfillcolor(BLACK);
+	for (int i = 0; i < ball_number; i++)
+	{
+		fillcircle(balls[i].ball_x, balls[i].ball_y, radius);
+	}
+	for (int i = 0; i < brick_number; i++)
+	{
+		if (bricks[i].exist == 0)
+		{
+			setcolor(BLACK);
+			setfillcolor(BLACK);
+			fillrectangle(bricks[i].brick_left, bricks[i].brick_top, bricks[i].brick_right, bricks[i].brick_bottom);
+		}
+	}
+	bar(bar_left, bar_top, bar_right, bar_bottom);
+}
+void show()
+{
+	setcolor(YELLOW);
+	setfillcolor(RED);
+	for (int i = 0; i < ball_number; i++)
+	{
+		fillcircle(balls[i].ball_x, balls[i].ball_y, radius);
+	}
+	//显示砖块;
+	for (int i = 0; i < brick_number; i++)
+	{
+		if (bricks[i].exist == 1)
+		{
+			setcolor(WHITE);
+			setfillcolor(WHITE);
+			fillrectangle(bricks[i].brick_left, bricks[i].brick_top, bricks[i].brick_right, bricks[i].brick_bottom);
+		}
+	}
+	setfillcolor(GREEN);
+	bar(bar_left, bar_top, bar_right, bar_bottom);
+	FlushBatchDraw();
+	Sleep(3);
+}
+void updateWithoutInput()
+{
+	if (BEGIN == 1)
+	{
+		for (int i = 0; i < ball_number; i++)
+		{
+			//判断是否与挡板上表面相撞
+			if (balls[i].ball_y + radius >= bar_top && balls[i].ball_y + radius <= bar_top + 5.0)
+				if (balls[i].ball_x >= bar_left && balls[i].ball_x <= bar_right)
+				{
+					balls[i].ball_vy = -1.0;
+					balls[i].ball_vy *= randx();
+
+				}
+			//判断是否与挡板左脚碰撞
+			if (balls[i].ball_x < bar_left && dis(balls[i].ball_x, balls[i].ball_y, bar_left, bar_top) <= 36)
+			{
+				balls[i].ball_vx = balls[i].ball_vy = -1.0;
+				balls[i].ball_vx *= randx();
+				balls[i].ball_vy *= randx();
+			}
+			//判断是否与砖块碰撞
+
+			for (int j = 0; j < brick_number; j++)
+			{
+				if (bricks[j].exist == 1)
+				{
+					//判断是否与上表面相撞
+					if (balls[i].ball_y + radius >= bricks[j].brick_top && balls[i].ball_y + radius <= bricks[j].brick_top + 3)
+						if (balls[i].ball_x >= bricks[j].brick_left && balls[i].ball_x <= bricks[j].brick_right)
+						{
+							balls[i].ball_vy = -balls[i].ball_vy;
+							bricks[j].exist = 0;
+						}
+					//判断是否与下表面相撞
+					if (balls[i].ball_y - radius <= bricks[j].brick_bottom && balls[i].ball_y - radius >= bricks[j].brick_bottom - 3)
+						if (balls[i].ball_x >= bricks[j].brick_left && balls[i].ball_x <= bricks[j].brick_right)
+						{
+							balls[i].ball_vy = -balls[i].ball_vy;
+							bricks[j].exist = 0;
+						}
+					//判断是否与左面相撞
+					if (balls[i].ball_x + radius >= bricks[j].brick_left && balls[i].ball_x + radius <= bricks[j].brick_left + 3)
+						if (balls[i].ball_y >= bricks[j].brick_top && balls[i].ball_y <= bricks[j].brick_bottom)
+						{
+							balls[i].ball_vx = -balls[i].ball_vx;
+							bricks[j].exist = 0;
+						}
+					//判断是否与右面相撞
+					if (balls[i].ball_x - radius >= bricks[j].brick_right && balls[i].ball_x - radius <= bricks[j].brick_right - 3)
+						if (balls[i].ball_y >= bricks[j].brick_top && balls[i].ball_y <= bricks[j].brick_bottom)
+						{
+							balls[i].ball_vx = -balls[i].ball_vx;
+							bricks[j].exist = 0;
+						}
+
+					//判断左上角
+					if (balls[i].ball_x < bricks[j].brick_left && dis(balls[i].ball_x, balls[i].ball_y, bricks[j].brick_left, bricks[j].brick_top)<=36)
+					{
+						balls[i].ball_vx = balls[i].ball_vy = -1.0;
+						balls[i].ball_vx *= randx();
+						balls[i].ball_vy *= randx();
+						bricks[j].exist = 0;
+					}
+					//判断右上角
+					if (balls[i].ball_x > bricks[j].brick_right && dis(balls[i].ball_x, balls[i].ball_y, bricks[j].brick_right, bricks[j].brick_top) <= 36)
+					{
+						bricks[j].exist = 0;
+						balls[i].ball_vx = 1.0;
+						balls[i].ball_vy = -1.0;
+						balls[i].ball_vx *= randx();
+						balls[i].ball_vy *= randx();
+					}
+					//判断左下角
+					if (balls[i].ball_x < bricks[j].brick_left && dis(balls[i].ball_x, balls[i].ball_y, bricks[i].brick_left, bricks[i].brick_bottom) <= 36)
+					{
+						bricks[j].exist = 0;
+						balls[i].ball_vx = -1.0;
+						balls[i].ball_vy = 1.0;
+						balls[i].ball_vx *= randx();
+						balls[i].ball_vy *= randx();
+					}
+					if (balls[i].ball_x > bricks[j].brick_right && dis(balls[i].ball_x, balls[i].ball_y, bricks[i].brick_right, bricks[i].brick_bottom) <= 36)
+					{
+						bricks[j].exist = 0;
+						balls[i].ball_vx = balls[i].ball_vy =1.0;
+						balls[i].ball_vx *= randx();
+						balls[i].ball_vy *= randx();
+					}
+				}
+			}
+
+			balls[i].ball_x += balls[i].ball_vx;
+			balls[i].ball_y += balls[i].ball_vy;
+
+			if (balls[i].ball_x <= radius)
+			{
+				balls[i].ball_x = radius;
+				balls[i].ball_vx = -balls[i].ball_vx;
+			}
+			if (balls[i].ball_x >= Width - radius)
+			{
+				balls[i].ball_x = Width - radius;
+				balls[i].ball_vx = -balls[i].ball_vx;
+			}
+			if (balls[i].ball_y <= radius)
+			{
+				balls[i].ball_y = radius;
+				balls[i].ball_vy = -balls[i].ball_vy;
+			}
+			if (balls[i].ball_y >= High - radius)
+			{
+				balls[i].ball_y = High - radius;
+				balls[i].ball_vy = -balls[i].ball_vy;
+			}
+		}
+
+	
+	}
+}
+void updateWithInput()
+{
+	if (playStyle == 1)
+	{
+		MOUSEMSG m;
+		if (MouseHit())
+		{
+			m = GetMouseMsg();
+			if (m.uMsg == WM_MOUSEMOVE)
+			{
+				bar_x = m.x;
+				bar_left = bar_x - bar_width / 2;
+				bar_right = bar_x + bar_width / 2;
+				if (BEGIN == 0)
+				{
+					balls[0].ball_x = bar_x;
+					balls[0].ball_y = bar_top - 12.0;
+				}
+			}
+
+			if (BEGIN == 0 && m.uMsg == WM_LBUTTONDOWN)
+			{
+				BEGIN = 1;
+			}
+		}
+	}
+}
+int main()
+{
+	startup();
+	while (1)
+	{
+		clean();
+		updateWithoutInput();
+		updateWithInput();
+		show();
+	}
+}
