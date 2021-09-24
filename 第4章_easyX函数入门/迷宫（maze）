@@ -1,0 +1,355 @@
+#include<graphics.h>
+#include<stdio.h>
+int map[15][15];
+int isRoad[15][15];
+int OK = 0;
+#define WIDTH 15
+#define HIGH 15
+struct node
+{
+	int prex;
+	int prey;
+	int a, b, c, d; //上下左右四个方向 1向上，2向下，3向左，4向右
+	int prea,preb,prec,pred;
+	int roadNumber;
+	int exist;
+};
+struct node nodes[WIDTH][HIGH];
+void show();
+void updateTheMap()
+{
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 15; j++)
+		{
+			map[i][j] = 0;
+		}
+	}
+
+}
+void road(int x, int y) //判断条件，不可以回头，不可以超过边界，不可以走已经走过的路
+{
+	int rad = rand() % 4 + 1;
+	//判断x,y的上下左右
+	if (x - 1 >= 0 && nodes[x][y].prea != 1)
+	{
+		if (nodes[x - 1][y].exist == 1)
+		{
+			nodes[x][y].prea = 1;
+		}
+	}
+	if (x + 1 <= HIGH - 1 && nodes[x][y].preb != 1)
+	{
+		if (nodes[x + 1][y].exist == 1)
+		{
+			nodes[x][y].preb = 1;
+		}
+	}
+	if (y - 1 >= 0 && nodes[x][y].prec != 1)
+	{
+		if (nodes[x][y - 1].exist == 1)
+		{
+			nodes[x][y].prec = 1;
+		}
+	}
+	if (y + 1 <= WIDTH - 1 && nodes[x][y].pred != 1)
+	{
+		if (nodes[x][y + 1].exist == 1)
+		{
+			nodes[x][y].pred = 1;
+		}
+	}
+
+	if ((nodes[x][y].prea == 1 && nodes[x][y].preb == 1 && nodes[x][y].prec == 1 && nodes[x][y].pred == 1))
+	{
+		map[x][y] = 0;
+		isRoad[x][y] = 0;
+		nodes[x][y].exist = 0;
+		return;
+	}
+
+	//if (x == 0 && y == 0) //左上角 两种情况
+	//{
+	    for (int i = 0; i < nodes[x][y].roadNumber; i++)
+		{
+			
+			if (OK == 1) break;
+			
+			while ((rad == 1 && nodes[x][y].prea == 1)|| (rad == 2 && nodes[x][y].preb == 1) || 
+				(rad == 3 && nodes[x][y].prec == 1) || (rad == 4 && nodes[x][y].pred == 1))
+			{
+				rad = rand() % 4 + 1;
+			}
+		/*	for (int i = 0; i < 15; i++)
+			{
+				for (int j = 0; j < 15; j++)
+				{
+					printf("%d(%d) ", map[i][j], nodes[i][j].roadNumber);
+				}
+				puts("");
+			}
+			for (int i = 0; i < 15; i++)
+			{
+				for (int j = 0; j < 15; j++)
+				{
+					printf("(%d %d %d %d) ", nodes[i][j].prea, nodes[i][j].preb, nodes[i][j].prec, nodes[i][j].pred);
+				}
+				puts("");
+			}
+			puts("--------------------------------");*/
+			if (rad == 1) //向上走
+			{
+				nodes[x - 1][y].preb = 1;
+				map[x - 1][y] = isRoad[x- 1][y] = 1;
+				nodes[x][y].prea = 1;
+				nodes[x - 1][y].prex = x;
+				nodes[x - 1][y].prey = y;
+				nodes[x][y].roadNumber--;
+				nodes[x - 1][y].roadNumber--;
+				nodes[x - 1][y].exist = 1;
+				show();
+				if (x - 1 == WIDTH - 1 && y == HIGH - 1)
+				{
+					OK = 1;
+				}
+				road(x - 1, y);
+				if ((nodes[x][y].prea == 1 && nodes[x][y].preb == 1 && nodes[x][y].prec == 1 && nodes[x][y].pred == 1))
+				{
+					map[x][y] = 0;
+					isRoad[x][y] = 0;
+					nodes[x][y].exist = 0;
+					show();
+					return;
+				}
+			}
+			else if (rad == 2) //向下走
+			{
+				nodes[x][y].preb = 1;
+				nodes[x + 1][y].prea = 1;
+				nodes[x + 1][y].prex = x;
+				nodes[x + 1][y].prey = y;
+				map[x + 1][y] = isRoad[x + 1][y] = 1;
+				nodes[x][y].roadNumber--;
+				nodes[x + 1][y].roadNumber--;
+				nodes[x + 1][y].exist = 1;
+				show();
+				if (x + 1 == WIDTH - 1 && y == HIGH - 1)
+				{
+					OK = 1;
+				}
+				road(x + 1, y);
+				if ((nodes[x][y].prea == 1 && nodes[x][y].preb == 1 && nodes[x][y].prec == 1 && nodes[x][y].pred == 1))
+				{
+					map[x][y] = 0;
+					isRoad[x][y] = 0;
+					nodes[x][y].exist = 0;
+					show();
+					return;
+				}
+				
+			}
+			else if (rad == 3) //向左走
+			{
+				nodes[x][y].prec = 1;
+				nodes[x][y - 1].pred = 1;
+				nodes[x][y - 1].prex = x;
+				nodes[x][y - 1].prey = y;
+				map[x][y - 1] = isRoad[x][y - 1] = 1;
+				nodes[x][y - 1].exist = 1;
+				nodes[x][y].roadNumber--;
+				nodes[x][y - 1].roadNumber--;
+				show();
+				if (x== WIDTH - 1 && y - 1 == HIGH - 1)
+				{
+					OK = 1;
+				}
+				road(x, y - 1);
+				if ((nodes[x][y].prea == 1 && nodes[x][y].preb == 1 && nodes[x][y].prec == 1 && nodes[x][y].pred == 1))
+				{
+					map[x][y] = 0;
+					isRoad[x][y] = 0;
+					nodes[x][y].exist = 0;
+					show();
+					return;
+				}
+			}
+			else if (rad == 4) //向右走
+			{
+				nodes[x][y + 1].prec = 1;
+				nodes[x][y].pred = 1;
+				nodes[x][y + 1].prex = x;
+				nodes[x][y + 1].prey = y;
+				map[x][y + 1] = isRoad[x][y + 1] = 1;
+				nodes[x][y].roadNumber--;
+				nodes[x][y + 1].roadNumber--;
+				nodes[x][y + 1].exist = 1;
+				show();
+				if (x == WIDTH - 1 && y + 1 == HIGH - 1)
+				{
+					OK = 1;
+				}
+				
+				road(x, y + 1);
+				if ((nodes[x][y].prea == 1 && nodes[x][y].preb == 1 && nodes[x][y].prec == 1 && nodes[x][y].pred == 1))
+				{
+					map[x][y] = 0;
+					isRoad[x][y] = 0;
+					nodes[x][y].exist = 0;
+					show();
+					return;
+				}
+			}
+		}
+	//}
+	//if (x == 0 && y == WIDTH - 1)
+	//{
+	//	for (int i = 0; i < nodes[x][y].roadNumber; i++)
+	//	{
+	//		while ((rad == 1 && nodes[x][y].prea == 1) || (rad == 2 && nodes[x][y].preb == 1) || (rad == 3 && nodes[x][y].prea == 1) || (rad == 4 && nodes[x][y].pred == 1))
+	//		{
+	//			rad = rand() % 4 + 1;
+	//		}
+	//		if (rad == 1) //向上走
+	//		{
+	//			nodes[x][y + 1].preb = 1;
+	//			map[x][y + 1] = isRoad[x][y + 1] = 1;
+	//			nodes[x][y].prea = 1;
+	//			nodes[x][y + 1].prex = x;
+	//			nodes[x][y + 1].prey = y;
+	//			nodes[x][y].roadNumber--;
+	//			nodes[x][y + 1].roadNumber--;
+	//			road(x, y + 1);
+
+	//		}
+	//		else if (rad == 2) //向下走
+	//		{
+	//			nodes[x][y - 1].prea = 1;
+	//			nodes[x][y].preb = 1;
+	//			nodes[x][y - 1].prex = x;
+	//			nodes[x][y - 1].prey = y;
+	//			map[x][y - 1] = isRoad[x][y - 1] = 1;
+	//			nodes[x][y].roadNumber--;
+	//			nodes[x][y - 1].roadNumber--;
+	//			road(x, y - 1);
+	//		}
+	//		else if (rad == 3) //向左走
+	//		{
+	//			nodes[x][y].prec = 1;
+	//			nodes[x - 1][y].pred = 1;
+	//			nodes[x - 1][y].prex = x;
+	//			nodes[x - 1][y].prey = y;
+	//			map[x - 1][y] = isRoad[x - 1][y] = 1;
+	//			nodes[x][y].roadNumber--;
+	//			nodes[x - 1][y].roadNumber--;
+	//			road(x - 1, y);
+	//		}
+	//		else if (rad == 4) //向右走
+	//		{
+	//			nodes[x][y].pred = 1;
+	//			nodes[x + 1][y].prec = 1;
+	//			nodes[x + 1][y].prex = x;
+	//			nodes[x + 1][y].prey = y;
+	//			map[x + 1][y] = isRoad[x + 1][y] = 1;
+	//			nodes[x][y].roadNumber--;
+	//			nodes[x + 1][y].roadNumber--;
+	//			road(x + 1, y);
+	//		}
+	//	}
+	//}
+
+}
+void update() //初始化各点信息
+{
+	for (int i = 0; i < WIDTH; i++)
+	{
+		for (int j = 0; j < HIGH; j++)
+		{
+			nodes[i][j].roadNumber = 4;
+			nodes[i][j].exist = 0;
+		}
+	}
+	for (int i = 0; i < WIDTH ; i++)
+	{
+		for (int j = 0; j < HIGH; j++)
+		{
+			map[i][j] = isRoad[i][j] = 0;
+			//nodes[i][j].a = nodes[i][j].b = nodes[i][j].c = nodes[i][j].d = 0;
+			nodes[i][j].prex = nodes[i][j].prey = -1;
+			nodes[i][j].prea = nodes[i][j].preb = nodes[i][j].prec = nodes[i][j].pred = 0;
+			if (i == 0)
+			{
+				nodes[i][j].prea = 1;
+				nodes[i][j].roadNumber--;
+			}
+			if (i == 14)
+			{
+				nodes[i][j].preb = 1;
+				nodes[i][j].roadNumber--;
+			}
+			if (j == 0)
+			{
+				nodes[i][j].prec = 1;
+				nodes[i][j].roadNumber--;
+			}
+			if (j == 14)
+			{
+				nodes[i][j].pred = 1;
+				nodes[i][j].roadNumber--;
+			}
+		}
+	}
+	map[0][0] = isRoad[0][0] = 1;
+	nodes[0][0].prea = nodes[0][0].prec = 1;
+	nodes[0][0].exist = 1;
+}
+void show()
+{
+	int x = 20, y = 20;
+
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 15; j++)
+		{
+			if (map[i][j] == 0)
+			{
+				setcolor(BLACK);
+				setfillcolor(RED);
+				fillrectangle(x, y, x + 20, y + 20);
+			}
+			else {
+				setcolor(BLACK);
+				setfillcolor(GREEN);
+				fillrectangle(x, y, x + 20, y + 20);
+			}
+
+			x += 20;
+		}
+		y += 20;
+		x = 20;
+	}
+	Sleep(300);
+}
+int main()
+{
+	initgraph(500, 500);
+	
+	updateTheMap();
+	update();
+	road(0, 0);
+	show();
+
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 15; j++)
+		{
+			printf("%d ", map[i][j]);
+		}
+		puts("");
+	}
+	puts("--------------------------------");
+	while (1)
+	{
+
+	}
+	
+}
