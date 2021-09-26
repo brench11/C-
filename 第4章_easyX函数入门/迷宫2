@@ -2,31 +2,117 @@
 #include<string.h>
 #include<stdlib.h>
 #include<conio.h>
+#include<stdio.h>
 #define WIDTH 900
 #define HIGH 900
 #define BRICKW 10
 #define BRICKH 100
+int map[15][15] = { 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, };
+struct nodes
+{
+	int x, y;
+	struct nodes* next;
+};
+struct dist {
+	int key;
+	int prex, prey;
+	int distance;
+};
+int step;
+int overInput = 0;
+struct dist dis[15][15];
+int road[100][2] = { 0 };
+typedef struct nodes* pNodes;
 struct brick {
 	int x1, y1;
 	int state;// 确定，待定状态
 	int shape;// 横竖状态
+	int map_x, map_y;
 	struct brick* down;
 	struct brick* up;
 };
 int states = 1;
 int brickState = 0;
 typedef struct brick* pBrick;
-pBrick Head = NULL,current;
+pBrick Head = NULL, current;
 void add(pBrick node);
 void push();
+
+void re(int x, int y, int c)
+{
+	if (x == 0 && y == 0)
+	{
+		road[c][0] = 0;
+		road[c][1] = 0;
+		return;
+	}
+	re(dis[x][y].prex, dis[x][y].prey, c - 1);
+	road[c][0] = dis[x][y].prex;
+	road[c][1] = dis[x][y].prey;
+}
+
+pNodes add(pNodes head, pNodes current)
+{
+	if (head == NULL)
+	{
+		head = current;
+		return head;
+	}
+	else {
+		pNodes temp = head;
+		while (temp->next != NULL)
+			temp = temp->next;
+		temp->next = current;
+		return head;
+	}
+}
+pNodes out(pNodes head)
+{
+	if (head->next == NULL)
+	{
+		free(head);
+		return NULL;
+	}
+	else {
+		pNodes temp = head->next;
+		free(head);
+		return temp;
+	}
+}
+void startup()
+{
+	for (int i = 0; i < 15; i += 2)
+	{
+		for (int j = 0; j < 15; j += 2)
+		{
+			map[i][j] = 2;
+		}
+	}
+}
 void push()
 {
 	if (Head->down == NULL)
 	{
+		map[Head->map_x][Head->map_y] = 0;
 		free(Head);
 		Head = NULL;
 	}
 	else {
+		map[Head->map_x][Head->map_y] = 0;
 		pBrick node;
 		node = Head->down;
 		node->up = NULL;
@@ -93,6 +179,11 @@ void show()
 		}
 		node = node->down;
 	}
+	for (int i = 0; i < step; i++)
+	{
+		setlinecolor(RGB(0, 255, 0));
+		line(road[i][0] * 100 + 75, road[i][1] * 100 + 75, road[i + 1][0] * 100 + 75, road[i + 1][1] * 100 + 75);
+	}
 	FlushBatchDraw();
 	Sleep(3);
 	node = Head;
@@ -133,7 +224,7 @@ void updateWithInput()
 		input = _getch();
 		if (input == 'p') //结束输入
 		{
-
+			overInput = 1;
 		}
 		if (input == 'x') //生成挡板,确定挡板
 		{
@@ -146,6 +237,8 @@ void updateWithInput()
 				current->shape = 1;                                                     
 				current->x1 = 110;
 				current->y1 = 30;
+				current->map_x = 0;
+				current->map_y = 0;
 				// 入栈
 				add(current);
 			}
@@ -153,6 +246,7 @@ void updateWithInput()
 			{
 				brickState = 2; //挡板确定
 				current->state = 2;
+				map[current->map_x][current->map_y] = 1;
 			}
 		}
 		if (brickState == 1)
@@ -163,12 +257,16 @@ void updateWithInput()
 				{
 					current->x1 = 30;
 					current->y1 = 110;
+					current->map_x = 1;
+					current->map_y = 0;
 					current->shape = 2;
 				}
 				else
 				{
 					current->x1 = 110;
 					current->y1 = 30;
+					current->map_x = 0;
+					current->map_y = 1;
 					current->shape = 1;
 				}
 			}
@@ -177,18 +275,22 @@ void updateWithInput()
 				if (input == 'w'&& current->y1 > 30)
 				{
 					current->y1 -= 100;
+					current->map_y -= 2;
 				}
 				else if (input == 's' && current->y1 < 730)
 				{
 					current->y1 += 100;
+					current->map_y += 2;
 				}
 				else if (input == 'a' && current->x1 > 110)
 				{
 					current->x1 -= 100;
+					current->map_x -= 2;
 				}
 				else if (input == 'd' && current->x1 < 710)
 				{
 					current->x1 += 100;
+					current->map_x += 2;
 				}
 			}
 			else if (current->shape == 2) //
@@ -196,18 +298,22 @@ void updateWithInput()
 				if (input == 'w' && current->y1 > 110)
 				{
 					current->y1 -= 100;
+					current->map_y -= 2;
 				}
 				else if (input == 's' && current->y1 < 710)
 				{
 					current->y1 += 100;
+					current->map_y += 2;
 				}
 				else if (input == 'a' && current->x1 > 30)
 				{
 					current->x1 -= 100;
+					current->map_x -= 2;
 				}
 				else if (input == 'd' && current->x1 < 730)
 				{
 					current->x1 += 100;
+					current->map_x += 2;
 				}
 			}
 		}
@@ -225,9 +331,106 @@ int main()
 	initgraph(WIDTH, HIGH);
 	show();
 	BeginBatchDraw();
+	
+	while (1)
+	{
+		if (overInput == 1) break;
+		updateWithInput();
+		show();
+	}
+	EndBatchDraw();
+	pNodes head = NULL, temp;
+	startup();
+	
+	//从左上角开始搜索 ,对于每一个点上下左右检查4次
+
+	//初始化第一个点
+	head = (pNodes)malloc(sizeof(struct nodes));
+	head->x = head->y = 0;
+	head->next = NULL;
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 15; j++)
+		{
+			dis[i][j].key = dis[i][j].prex = dis[i][j].prey = dis[i][j].distance = 0;
+		}
+	}
+	dis[0][0].key = 1;
+	while (head != NULL)
+	{
+		int x = head->x;
+		int y = head->y;
+		//判断上下左右
+		int c = dis[x][y].distance + 1;
+		if (y > 0 && map[x][y - 1] == 0 && dis[x][y - 2].key == 0)//没有越界，没有挡板，没有被访问
+		{
+			dis[x][y - 2].key = 1;
+			dis[x][y - 2].prex = x;
+			dis[x][y - 2].prey = y;
+			dis[x][y - 2].distance = c;
+			temp = (pNodes)malloc(sizeof(struct nodes));
+			temp->next = NULL;
+			temp->x = x;
+			temp->y = y - 2;
+			head = add(head, temp);
+
+		}
+		if (y < 14 && map[x][y + 1] == 0 && dis[x][y + 2].key == 0)
+		{
+			dis[x][y + 2].key = 1;
+			dis[x][y + 2].prex = x;
+			dis[x][y + 2].prey = y;
+			dis[x][y + 2].distance = c;
+			temp = (pNodes)malloc(sizeof(struct nodes));
+			temp->next = NULL;
+			temp->x = x;
+			temp->y = y + 2;
+			head = add(head, temp);
+			if (x == 14 && y + 2 == 14)
+				break;
+		}
+		if (x > 0 && map[x - 1][y] == 0 && dis[x - 2][y].key == 0)
+		{
+			dis[x - 2][y].key = 1;
+			dis[x - 2][y].prex = x;
+			dis[x - 2][y].distance = c;
+			dis[x - 2][y].prey = y;
+			temp = (pNodes)malloc(sizeof(struct nodes));
+			temp->next = NULL;
+			temp->x = x - 2;
+			temp->y = y;
+			head = add(head, temp);
+		}
+		if (x < 14 && map[x + 1][y] == 0 && dis[x + 2][y].key == 0)
+		{
+			dis[x + 2][y].key = 1;
+			dis[x + 2][y].prex = x;
+			dis[x + 2][y].prey = y;
+			dis[x + 2][y].distance = c;
+			temp = (pNodes)malloc(sizeof(struct nodes));
+			temp->next = NULL;
+			temp->x = x + 2;
+			temp->y = y;
+			head = add(head, temp);
+			if (x + 2 == 14 && y == 14)
+				break;
+		}
+		head = out(head);
+		
+	}
+	re(14, 14, dis[14][14].distance);
+	for (int i = 0; i < dis[14][14].distance; i++)
+	{
+		road[i][0] = road[i][0] / 2;
+		road[i][1] = road[i][1] / 2;
+	}
+	step = dis[14][14].distance;
+	BeginBatchDraw();
+
 	while (1)
 	{
 		updateWithInput();
 		show();
 	}
+	EndBatchDraw();
 }
