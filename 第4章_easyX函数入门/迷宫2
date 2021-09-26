@@ -1,0 +1,120 @@
+#include<graphics.h>
+#include<string.h>
+#include<stdlib.h>
+#include<conio.h>
+#define WIDTH 900
+#define HIGH 900
+#define BRICKW 10
+#define BRICKH 86
+struct brick {
+	int x1, y1;
+	int state;// 确定，待定状态
+	struct brick* down;
+	struct brick* up;
+};
+int states = 1;
+int brickState = 0;
+typedef struct brick* pBrick;
+pBrick Head = NULL,current;
+pBrick add(pBrick node);
+void show()
+{
+	int x = 30, y = 30;
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			setcolor(BLACK);
+			setfillcolor(RGB(255,165,0));
+			fillrectangle(x, y, x + 70, y + 70);
+			x += 100;
+		}
+		x = 30;
+		y += 100;
+	}
+}
+void updateWithInput()
+{
+	char input;
+	if (_kbhit())
+	{
+		input = _getch();
+		if (input == 'p') //结束输入
+		{
+
+		}
+		if (input == 'x') //生成挡板,确定挡板
+		{
+			if (brickState != 1)
+			{
+				brickState = 1; //挡板生成进入待定状态
+				current = (pBrick)malloc(sizeof(struct brick));
+				current->down = current->up = NULL;
+				current->state = 1; //挡板待确定
+				current->x1 = 110;
+				current->y1 = 30;
+			}
+			else
+				brickState = 2; //挡板确定
+		}
+		if (brickState == 1)
+		{
+			if (input == 'c') //改变挡板横竖状态
+			{
+				if (states == 1)
+				{
+					current->x1 = 30;
+					current->y1 = 110;
+					states = 2;
+				}
+				else
+				{
+					current->x1 = 110;
+					current->y1 = 30;
+					states = 1;
+				}
+			}
+			if (states == 1) //竖着的
+			{
+				if (input == 'w'&& current->y1 > 30)
+				{
+					current->y1 -= 100;
+				}
+				else if (input == 's' && current->y1 < 730)
+				{
+					current->y1 += 100;
+				}
+				else if (input == 'a' && current->x1 > 110)
+				{
+					current->x1 -= 100;
+				}
+				else if (input == 'd' && current->y1 < 730)
+				{
+					current->x1 += 100;
+				}
+			}
+			else if (states == 2) //
+			{
+				if (input == 'w' && current->y1 > 110)
+				{
+					current->y1 -= 100;
+				}
+				else if (input == 's' && current->y1 < 730)
+				{
+					current->y1
+				}
+			}
+		}
+
+
+	}
+}
+int main()
+{
+	initgraph(WIDTH, HIGH);
+	show();
+	while (1)
+	{
+
+	}
+}
