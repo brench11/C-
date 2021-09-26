@@ -5,10 +5,11 @@
 #define WIDTH 900
 #define HIGH 900
 #define BRICKW 10
-#define BRICKH 86
+#define BRICKH 100
 struct brick {
 	int x1, y1;
 	int state;// 确定，待定状态
+	int shape;// 横竖状态
 	struct brick* down;
 	struct brick* up;
 };
@@ -16,7 +17,37 @@ int states = 1;
 int brickState = 0;
 typedef struct brick* pBrick;
 pBrick Head = NULL,current;
-pBrick add(pBrick node);
+void add(pBrick node);
+void push();
+void push()
+{
+	if (Head->down == NULL)
+	{
+		free(Head);
+		Head = NULL;
+	}
+	else {
+		pBrick node;
+		node = Head->down;
+		node->up = NULL;
+		free(Head);
+		Head = node;
+	}
+}
+void add(pBrick node)
+{
+	if (Head == NULL)
+	{
+		Head = node;
+		return;
+	}
+	else {
+		Head->up = node;
+		node->down = Head;
+		Head = node;
+		return;
+	}
+}
 void show()
 {
 	int x = 30, y = 30;
@@ -32,6 +63,67 @@ void show()
 		x = 30;
 		y += 100;
 	}
+	pBrick node = Head;
+	
+
+	while (node != NULL)
+	{
+		if (node->state == 1)//待定挡板显示蓝色
+		{
+			setcolor(RGB(65, 105, 225));
+			setfillcolor(RGB(65, 105, 225));
+			if (node->shape == 1)
+			{
+				fillrectangle(node->x1, node->y1 - 15, node->x1 + BRICKW, node->y1 + BRICKH);
+			}
+			else {
+				fillrectangle(node->x1 - 15, node->y1, node->x1 + BRICKH, node->y1 + BRICKW);
+			}
+		}
+		else {
+			setcolor(RGB(220, 20, 60));
+			setfillcolor(RGB(220, 20, 60));
+			if (node->shape == 1)
+			{
+				fillrectangle(node->x1, node->y1 - 15, node->x1 + BRICKW, node->y1 + BRICKH);
+			}
+			else {
+				fillrectangle(node->x1 - 15, node->y1, node->x1 + BRICKH, node->y1 + BRICKW);
+			}
+		}
+		node = node->down;
+	}
+	FlushBatchDraw();
+	Sleep(3);
+	node = Head;
+	while (node != NULL)
+	{
+		if (node->state == 1)
+		{
+			setcolor(BLACK);
+			setfillcolor(BLACK);
+			if (node->shape == 1)
+			{
+				fillrectangle(node->x1, node->y1 - 15, node->x1 + BRICKW, node->y1 + BRICKH);
+			}
+			else {
+				fillrectangle(node->x1 - 15, node->y1, node->x1 + BRICKH, node->y1 + BRICKW);
+			}
+		}
+		else {
+			setcolor(BLACK);
+			setfillcolor(BLACK);
+			if (node->shape == 1)
+			{
+				fillrectangle(node->x1, node->y1 - 15, node->x1 + BRICKW, node->y1 + BRICKH);
+			}
+			else {
+				fillrectangle(node->x1 - 15, node->y1, node->x1 + BRICKH, node->y1 + BRICKW);
+			}
+		}
+		node = node->down;
+	}
+	node = Head;
 }
 void updateWithInput()
 {
@@ -51,30 +143,36 @@ void updateWithInput()
 				current = (pBrick)malloc(sizeof(struct brick));
 				current->down = current->up = NULL;
 				current->state = 1; //挡板待确定
+				current->shape = 1;                                                     
 				current->x1 = 110;
 				current->y1 = 30;
+				// 入栈
+				add(current);
 			}
 			else
+			{
 				brickState = 2; //挡板确定
+				current->state = 2;
+			}
 		}
 		if (brickState == 1)
 		{
 			if (input == 'c') //改变挡板横竖状态
 			{
-				if (states == 1)
+				if (current->shape == 1)
 				{
 					current->x1 = 30;
 					current->y1 = 110;
-					states = 2;
+					current->shape = 2;
 				}
 				else
 				{
 					current->x1 = 110;
 					current->y1 = 30;
-					states = 1;
+					current->shape = 1;
 				}
 			}
-			if (states == 1) //竖着的
+			if (current->shape == 1) //竖着的
 			{
 				if (input == 'w'&& current->y1 > 30)
 				{
@@ -88,33 +186,48 @@ void updateWithInput()
 				{
 					current->x1 -= 100;
 				}
-				else if (input == 'd' && current->y1 < 730)
+				else if (input == 'd' && current->x1 < 710)
 				{
 					current->x1 += 100;
 				}
 			}
-			else if (states == 2) //
+			else if (current->shape == 2) //
 			{
 				if (input == 'w' && current->y1 > 110)
 				{
 					current->y1 -= 100;
 				}
-				else if (input == 's' && current->y1 < 730)
+				else if (input == 's' && current->y1 < 710)
 				{
-					current->y1
+					current->y1 += 100;
+				}
+				else if (input == 'a' && current->x1 > 30)
+				{
+					current->x1 -= 100;
+				}
+				else if (input == 'd' && current->x1 < 730)
+				{
+					current->x1 += 100;
 				}
 			}
 		}
-
-
+		if (brickState == 2)
+		{
+			if (input == 'z') //挡板撤销操作
+			{
+				push();
+			}
+		}
 	}
 }
 int main()
 {
 	initgraph(WIDTH, HIGH);
 	show();
+	BeginBatchDraw();
 	while (1)
 	{
-
+		updateWithInput();
+		show();
 	}
 }
