@@ -1,0 +1,105 @@
+#include<graphics.h>
+#define WIDTH 1500
+#define HIGH 1080
+int boardLine_x, boardLine_y;
+void show();
+void startup();
+int reDis(int);//构建一个象棋的矩阵，根据矩阵中的位置返回在棋盘中的位置
+void showStar(int, int);
+int main()
+{
+	initgraph(WIDTH, HIGH);
+	setbkcolor(RGB(237, 145, 33));
+	cleardevice();
+	startup();
+	while (1)
+	{
+		
+		show();
+	}
+}
+void showStar(int a, int b)
+{
+	//画8条线
+	int lines = 15;
+	a = reDis(a);
+	b = reDis(b);
+	setlinecolor(RGB(227, 23, 13));
+	line(a - 5, b - 5, a - 5 - lines, b - 5);
+	line(a - 5, b - 5, a - 5, b - 5 - lines);
+	line(a + 5, b - 5, a + 5 + lines, b - 5);
+	line(a + 5, b - 5, a + 5, b - 5 - lines);
+	line(a - 5, b + 5, a - 5 - lines, b + 5);
+	line(a - 5, b + 5, a - 5, b + 5 + lines);
+	line(a + 5, b + 5, a + 5 + lines, b + 5);
+	line(a + 5, b + 5, a + 5, b + lines + 5);
+
+}
+int reDis(int a)
+{
+	return 75 + a * 97;
+}
+void startup()
+{
+	boardLine_x = boardLine_y = 75;
+}
+void show()
+{
+	int step = 97;
+	for (int i = 0; i < 10; i++) //横着的
+	{
+		
+		line(boardLine_x, boardLine_y + i * step, boardLine_x + 8 * step, boardLine_y + i * step);
+	}
+	for (int i = 0; i < 9; i++) //竖着的
+	{
+		if (i != 0 && i != 8) {
+			line(boardLine_x + i * step, boardLine_y, boardLine_x + i * step, boardLine_y + 4 * step);
+			line(boardLine_x + i * step, boardLine_y + 5 * step, boardLine_x + i * step, boardLine_y + 9 * step);
+		}
+		else {
+			line(boardLine_x + i * step, boardLine_y, boardLine_x + i * step, boardLine_y + 9 * step);
+		}
+	}
+	//绘制外边框
+	line(boardLine_x - 8, boardLine_y - 8, boardLine_x + 8 * step + 8, boardLine_y - 8);
+	line(boardLine_x - 8, boardLine_y + 8 + 9 * step, boardLine_x + 8 * step + 8, boardLine_y + 8 + 9 * step);
+	line(boardLine_x - 8, boardLine_y - 8, boardLine_x - 8, boardLine_y + 8 + 9 * step);
+	line(boardLine_x + 8 * step + 8, boardLine_y - 8, boardLine_x + 8 * step + 8, boardLine_y + 8 + 9 * step);
+	//绘制斜线
+	line(reDis(3), reDis(0), reDis(5), reDis(2));
+	line(reDis(3), reDis(0) + 7 * step, reDis(5), reDis(2) + 7 * step);
+	line(reDis(5), reDis(0), reDis(3), reDis(2));
+	line(reDis(5), reDis(0) + 7 * step, reDis(3), reDis(2) + 7 * step);
+	//画星星
+	showStar(2, 3);
+	showStar(4, 3);
+	showStar(6, 3);
+	showStar(2, 6);
+	showStar(4, 6);
+	showStar(6, 6);
+	showStar(1, 2);
+	showStar(1, 7);
+	showStar(7, 2);
+	showStar(7, 7);
+	int lines = 15;
+	line(reDis(0) + 5, reDis(3) - 5, reDis(0) + 5 + lines, reDis(3) - 5);
+	line(reDis(0) + 5, reDis(3) - 5, reDis(0) + 5, reDis(3) - 5 - lines);
+	line(reDis(0) + 5, reDis(3) + 5, reDis(0) + 5 + lines, reDis(3) + 5);
+	line(reDis(0) + 5, reDis(3) + 5, reDis(0) + 5, reDis(3) + lines + 5);
+
+	line(reDis(0) + 5, reDis(6) - 5, reDis(0) + 5 + lines, reDis(6) - 5);
+	line(reDis(0) + 5, reDis(6) - 5, reDis(0) + 5, reDis(6) - 5 - lines);
+	line(reDis(0) + 5, reDis(6) + 5, reDis(0) + 5 + lines, reDis(6) + 5);
+	line(reDis(0) + 5, reDis(6) + 5, reDis(0) + 5, reDis(6) + lines + 5);
+
+	line(reDis(8) - 5, reDis(3) - 5, reDis(8) - 5 - lines, reDis(3) - 5);
+	line(reDis(8) - 5, reDis(3) - 5, reDis(8) - 5, reDis(3) - 5 - lines);
+	line(reDis(8) - 5, reDis(3) + 5, reDis(8) - 5 - lines, reDis(3) + 5);
+	line(reDis(8) - 5, reDis(3) + 5, reDis(8) - 5, reDis(3) + 5 + lines);
+
+	line(reDis(8) - 5, reDis(6) - 5, reDis(8) - 5 - lines, reDis(6) - 5);
+	line(reDis(8) - 5, reDis(6) - 5, reDis(8) - 5, reDis(6) - 5 - lines);
+	line(reDis(8) - 5, reDis(6) + 5, reDis(8) - 5 - lines, reDis(6) + 5);
+	line(reDis(8) - 5, reDis(6) + 5, reDis(8) - 5, reDis(6) + 5 + lines);
+}
