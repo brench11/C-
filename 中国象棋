@@ -9,6 +9,8 @@ int rePiece(int);
 void showStar(int, int);
 void searchPoint(int, int);
 void updateWithInput();
+void updateIstap();
+int istap = 0;
 int board[9][10]{
 	2,2,2,2,2,2,2,2,2,
 	0,0,0,0,0,0,0,0,0,
@@ -134,6 +136,7 @@ int main()
 		fillrectangle(0, 0, WIDTH, HIGH);
 		//cleardevice();
 		updateWithInput();
+		updateIstap();
 		show();
 	}
 	EndBatchDraw();
@@ -164,6 +167,118 @@ int reDis(int a)
 {
 	return 75 + a * 97;
 }
+void updateIstap()
+{
+	if (hongshuai.inStack == 1)
+	{
+		//帅在最下面，横坐标：3,4,5.纵坐标：9,8,7 
+		if (hongshuai.m_x - 1 >= 3 && board[hongshuai.m_x - 1][hongshuai.m_y] == 0)
+		{
+			board[hongshuai.m_x - 1][hongshuai.m_y] = -1;
+		}
+		if (hongshuai.m_x + 1 <= 5 && board[hongshuai.m_x + 1][hongshuai.m_y] == 0)
+		{
+			board[hongshuai.m_x + 1][hongshuai.m_y] = -1;
+		}
+		if (hongshuai.m_y - 1 >= 7 && board[hongshuai.m_x][hongshuai.m_y - 1] == 0)
+		{
+			board[hongshuai.m_x - 1][hongshuai.m_y] = -1;
+		}
+		if (hongshuai.m_y + 1 <= 9 && board[hongshuai.m_x][hongshuai.m_y + 1] == 0)
+		{
+			board[hongshuai.m_x][hongshuai.m_y + 1] = -1;
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongshi[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongxiang[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongma[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongche[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongpao[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		if (hongbing[i].inStack == 1)
+		{
+
+		}
+	}
+	//
+	if (heijiang.inStack == 1)
+	{
+		
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (heishi[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (heixiang[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (heima[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (heiche[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (heipao[i].inStack == 1)
+		{
+
+		}
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		if (heizu[i].inStack == 1)
+		{
+
+		}
+	}
+}
 void updateWithInput()
 {
 	MOUSEMSG m;
@@ -172,7 +287,10 @@ void updateWithInput()
 		m = GetMouseMsg();
 		if (m.uMsg == WM_LBUTTONDOWN)
 		{
-			searchPoint(m.x, m.y);
+			if (istap == 0)
+			{
+				searchPoint(m.x, m.y);
+			}
 
 		}
 	}
@@ -186,7 +304,114 @@ void searchPoint(int a, int b)
 			int s = (a - reDis(i)) * (a - reDis(i)) + (b - reDis(j)) * (b - reDis(j));
 			if (s < 41 * 41)
 			{
+				//判断哪一个棋子被点击了
+				if (hongshuai.m_x == i && hongshuai.m_y == j)
+				{
+					hongshuai.inStack = 1;
+					istap = 1;
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (hongshi[k].m_x == i && hongshi[i].m_y == j && hongshi[i].alife == 1)
+					{
+						hongshi[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (hongxiang[k].m_x == i && hongxiang[i].m_y == j && hongxiang[i].alife == 1)
+					{
+						hongxiang[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (hongma[k].m_x == i && hongma[i].m_y == j && hongma[i].alife == 1)
+					{
+						hongma[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (hongche[k].m_x == i && hongche[i].m_y == j && hongche[i].alife == 1)
+					{
+						hongche[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (hongpao[k].m_x == i && hongpao[i].m_y == j && hongpao[i].alife == 1)
+					{
+						hongpao[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 5; i++)
+				{
+					if (hongbing[k].m_x == i && hongbing[i].m_y == j && hongbing[i].alife == 1)
+					{
+						hongbing[k].inStack = 1;
+						istap = 1;
+					}
+				}
 				//
+				if (heijiang.m_x == i && heijiang.m_y == j && heijiang.alife == 1)
+				{
+					heijiang.inStack = 1;
+					istap = 1;
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (heishi[k].m_x == i && heishi[i].m_y == j && heishi[i].alife == 1)
+					{
+						heishi[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (heixiang[k].m_x == i && heixiang[i].m_y == j && heixiang[i].alife == 1)
+					{
+						heixiang[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (heima[k].m_x == i && heima[i].m_y == j && heima[i].alife == 1)
+					{
+						heima[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (heiche[k].m_x == i && heiche[i].m_y == j && heiche[i].alife == 1)
+					{
+						heiche[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 2; i++)
+				{
+					if (heipao[k].m_x == i && heipao[i].m_y == j && heipao[i].alife == 1)
+					{
+						heipao[k].inStack = 1;
+						istap = 1;
+					}
+				}
+				for (int k = 0; k < 5; i++)
+				{
+					if (heizu[k].m_x == i && heizu[i].m_y == j && heizu[i].alife == 1)
+					{
+						heizu[k].inStack = 1;
+						istap = 1;
+					}
+				}
 			}
 		}
 	}
@@ -462,112 +687,129 @@ void show()
 			putimage(hongshi[i].b_x, hongshi[i].b_y, &img_hongshi, SRCINVERT);
 		}
 	}
-	////象
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (hongxiang[i].alife == 1)
-	//	{
-	//		putimage(hongxiang[i].b_x, hongxiang[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(hongxiang[i].b_x, hongxiang[i].b_y, &img_hongxiang, SRCINVERT);
-	//	}
-	//}
-	////马
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (hongma[i].alife == 1)
-	//	{
-	//		putimage(hongma[i].b_x, hongma[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(hongma[i].b_x, hongma[i].b_y, &img_hongma, SRCINVERT);
-	//	}
-	//}
-	////车
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (hongche[i].alife == 1)
-	//	{
-	//		putimage(hongche[i].b_x, hongche[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(hongche[i].b_x, hongche[i].b_y, &img_hongche, SRCINVERT);
-	//	}
-	//}
-	////炮
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (hongpao[i].alife == 1)
-	//	{
-	//		putimage(hongpao[i].b_x, hongpao[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(hongpao[i].b_x, hongpao[i].b_y, &img_hongpao, SRCINVERT);
-	//	}
-	//}
-	////兵
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	if (hongbing[i].alife == 1)
-	//	{
-	//		putimage(hongbing[i].b_x, hongbing[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(hongbing[i].b_x, hongbing[i].b_y, &img_hongbing, SRCINVERT);
-	//	}
-	//}
-	////显示黑方存活棋子
-	////将
-	//if (heijiang.alife == 1)
-	//{
-	//	putimage(heijiang.b_x, heijiang.b_y, &img_bk, NOTSRCERASE);
-	//	putimage(heijiang.b_x, heijiang.b_y, &img_heijiang, SRCINVERT);
-	//}
-	////士
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (heishi[i].alife == 1)
-	//	{
-	//		putimage(heishi[i].b_x, heishi[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(heishi[i].b_x, heishi[i].b_y, &img_heishi, SRCINVERT);
-	//	}
-	//}
-	////象
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (heixiang[i].alife == 1)
-	//	{
-	//		putimage(heixiang[i].b_x, heixiang[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(heixiang[i].b_x, heixiang[i].b_y, &img_heixiang, SRCINVERT);
-	//	}
-	//}
-	////马
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (heima[i].alife == 1)
-	//	{
-	//		putimage(heima[i].b_x, heima[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(heima[i].b_x, heima[i].b_y, &img_heima, SRCINVERT);
-	//	}
-	//}
-	////车
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (heiche[i].alife == 1)
-	//	{
-	//		putimage(heiche[i].b_x, heiche[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(heiche[i].b_x, heiche[i].b_y, &img_heiche, SRCINVERT);
-	//	}
-	//}
-	////炮
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	if (heipao[i].alife == 1)
-	//	{
-	//		putimage(heipao[i].b_x, heipao[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(heipao[i].b_x, heipao[i].b_y, &img_heipao, SRCINVERT);
-	//	}
-	//}
-	////卒
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	if (heizu[i].alife == 1)
-	//	{
-	//		putimage(heizu[i].b_x, heizu[i].b_y, &img_bk, NOTSRCERASE);
-	//		putimage(heizu[i].b_x, heizu[i].b_y, &img_heizu, SRCINVERT);
-	//	}
-	//}
+	//象
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongxiang[i].alife == 1)
+		{
+			putimage(hongxiang[i].b_x, hongxiang[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(hongxiang[i].b_x, hongxiang[i].b_y, &img_hongxiang, SRCINVERT);
+		}
+	}
+	//马
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongma[i].alife == 1)
+		{
+			putimage(hongma[i].b_x, hongma[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(hongma[i].b_x, hongma[i].b_y, &img_hongma, SRCINVERT);
+		}
+	}
+	//车
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongche[i].alife == 1)
+		{
+			putimage(hongche[i].b_x, hongche[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(hongche[i].b_x, hongche[i].b_y, &img_hongche, SRCINVERT);
+		}
+	}
+	//炮
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongpao[i].alife == 1)
+		{
+			putimage(hongpao[i].b_x, hongpao[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(hongpao[i].b_x, hongpao[i].b_y, &img_hongpao, SRCINVERT);
+		}
+	}
+	//兵
+	for (int i = 0; i < 5; i++)
+	{
+		if (hongbing[i].alife == 1)
+		{
+			putimage(hongbing[i].b_x, hongbing[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(hongbing[i].b_x, hongbing[i].b_y, &img_hongbing, SRCINVERT);
+		}
+	}
+	//显示黑方存活棋子
+	//将
+	if (heijiang.alife == 1)
+	{
+		putimage(heijiang.b_x, heijiang.b_y, &img_bk, NOTSRCERASE);
+		putimage(heijiang.b_x, heijiang.b_y, &img_heijiang, SRCINVERT);
+	}
+	//士
+	for (int i = 0; i < 2; i++)
+	{
+		if (heishi[i].alife == 1)
+		{
+			putimage(heishi[i].b_x, heishi[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(heishi[i].b_x, heishi[i].b_y, &img_heishi, SRCINVERT);
+		}
+	}
+	//象
+	for (int i = 0; i < 2; i++)
+	{
+		if (heixiang[i].alife == 1)
+		{
+			putimage(heixiang[i].b_x, heixiang[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(heixiang[i].b_x, heixiang[i].b_y, &img_heixiang, SRCINVERT);
+		}
+	}
+	//马
+	for (int i = 0; i < 2; i++)
+	{
+		if (heima[i].alife == 1)
+		{
+			putimage(heima[i].b_x, heima[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(heima[i].b_x, heima[i].b_y, &img_heima, SRCINVERT);
+		}
+	}
+	//车
+	for (int i = 0; i < 2; i++)
+	{
+		if (heiche[i].alife == 1)
+		{
+			putimage(heiche[i].b_x, heiche[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(heiche[i].b_x, heiche[i].b_y, &img_heiche, SRCINVERT);
+		}
+	}
+	//炮
+	for (int i = 0; i < 2; i++)
+	{
+		if (heipao[i].alife == 1)
+		{
+			putimage(heipao[i].b_x, heipao[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(heipao[i].b_x, heipao[i].b_y, &img_heipao, SRCINVERT);
+		}
+	}
+	//卒
+	for (int i = 0; i < 5; i++)
+	{
+		if (heizu[i].alife == 1)
+		{
+			putimage(heizu[i].b_x, heizu[i].b_y, &img_bk, NOTSRCERASE);
+			putimage(heizu[i].b_x, heizu[i].b_y, &img_heizu, SRCINVERT);
+		}
+	}
+
+	//显示棋盘待定落子方框
+	for (int i = 0; i < 9; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			if (board[i][j] == -1)
+			{
+				int x = reDis(i);
+				int y = reDis(j);
+				line(x - 10, y - 10, x + 10, y - 10);
+				line(x + 10, y - 10, x + 10, y + 10);
+				line(x + 10, y + 10, x - 10, y + 10);
+				line(x - 10, y + 10, x - 10, x - 10);
+			}
+		}
+	}
 	FlushBatchDraw();
 	Sleep(3);
 }
