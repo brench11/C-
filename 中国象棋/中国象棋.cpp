@@ -15,16 +15,16 @@ void cleanN1();
 void remove(int, int);
 int istap = 0;
 int board[10][9]={
-	2,2,2,2,2,2,2,2,2,
+	0,2,2,2,2,2,2,2,2,
 	0,0,0,0,0,0,0,0,0,
-	0,2,0,0,0,0,0,0,0,
+	0,2,0,1,0,0,0,0,0,
 	2,0,2,0,2,0,2,0,2,
 	0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,
 	1,0,1,0,1,0,1,0,1,
-	0,1,0,0,0,0,0,1,0,
-	0,0,0,0,2,0,0,0,0,
-	1,1,1,1,1,1,1,1,1
+	0,1,0,2,0,0,0,1,0,
+	0,0,0,0,0,0,0,0,0,
+	0,1,1,1,1,1,1,1,1
 };
 struct hongChe {
 	int b_x, b_y;
@@ -157,13 +157,24 @@ void cleanN1()
 }
 void remove(int a, int b)
 {
-	//红方
+	//红方阵营
+	//
 	if (hongshuai.m_x == a && hongshuai.m_y == b)
 	{
 		hongshuai.alife == 0;
 	}
-
-	//黑方
+	//红车
+	
+	for (int i = 0; i < 2; i++)
+	{
+		if (hongche[i].m_x == a && hongche[i].m_y == b)
+		{
+			hongche[i].alife = 0;
+		}
+	}
+	//黑方阵营
+	
+	//黑车
 	for (int i = 0; i < 2; i++)
 	{
 		if (heiche[i].m_x == a && heiche[i].m_y == b)
@@ -345,20 +356,73 @@ void updateIstap() //此函数仅做可能位置显示，不移动
 		{
 			board[heijiang.m_y + 1][heijiang.m_x] = -1;
 		}
+		if (heijiang.m_x - 1 >= 3 && board[heijiang.m_y][heijiang.m_x - 1] == 1)
+		{
+			board[heijiang.m_y][heijiang.m_x - 1] = -2;
+		}
+		if (heijiang.m_x + 1 <= 5 && board[heijiang.m_y][heijiang.m_x + 1] == 1)
+		{
+			board[heijiang.m_y][heijiang.m_x + 1] = -2;
+		}
+		if (heijiang.m_y - 1 >= 0 && board[heijiang.m_y - 1][heijiang.m_x] == 1)
+		{
+			board[heijiang.m_y - 1][heijiang.m_x] = -2;
+		}
+		if (heijiang.m_y + 1 <= 2 && board[heijiang.m_y + 1][heijiang.m_x] == 1)
+		{
+			board[heijiang.m_y + 1][heijiang.m_x] = -2;
+		}
 	}
 	for (int i = 0; i < 2; i++)
 	{
 		if (heishi[i].inStack == 1)
 		{
+			//左上
 			if (heishi[i].m_x - 1 >= 3 && heishi[i].m_y - 1 >= 0)
 			{
 				if (board[heishi[i].m_y - 1][heishi[i].m_x - 1] == 0)
 				{
-					board[heishi[i].m_y - 1][heishi[i].m_x - 1];
+					board[heishi[i].m_y - 1][heishi[i].m_x - 1] = -1;
 				}
-				else if (board[heishi[i].m_y - 1][heishi[i].m_x - 1] == 2)
+				else if (board[heishi[i].m_y - 1][heishi[i].m_x - 1] == 1)
 				{
 					board[heishi[i].m_y - 1][heishi[i].m_x - 1] = -2;
+				}
+			}
+			//右上
+			if (heishi[i].m_x + 1 <= 5 && heishi[i].m_y - 1 >= 0)
+			{
+				if (board[heishi[i].m_y - 1][heishi[i].m_x + 1] == 0)
+				{
+					board[heishi[i].m_y - 1][heishi[i].m_x + 1] = -1;
+				}
+				else if (board[heishi[i].m_y - 1][heishi[i].m_x + 1] == 1)
+				{
+					board[heishi[i].m_y - 1][heishi[i].m_x + 1] = -2;
+				}
+			}
+			//左下
+			if (heishi[i].m_x - 1 >= 3 && heishi[i].m_y + 1 <= 2)
+			{
+				if (board[heishi[i].m_y + 1][heishi[i].m_x - 1] == 0)
+				{
+					board[heishi[i].m_y + 1][heishi[i].m_x - 1] = -1;
+				}
+				else if (board[heishi[i].m_y + 1][heishi[i].m_x - 1] == 1)
+				{
+					board[heishi[i].m_y + 1][heishi[i].m_x - 1] = -2;
+				}
+			}
+			//右下
+			if (heishi[i].m_x + 1 <= 5 && heishi[i].m_y + 1 <= 2)
+			{
+				if (board[heishi[i].m_y + 1][heishi[i].m_x + 1] == 0)
+				{
+					board[heishi[i].m_y + 1][heishi[i].m_x + 1] = -1;
+				}
+				else if (board[heishi[i].m_y + 1][heishi[i].m_x + 1] == 1)
+				{
+					board[heishi[i].m_y + 1][heishi[i].m_x + 1] = -2;
 				}
 			}
 		}
@@ -428,6 +492,8 @@ void movePoint(int a, int b)
 			{
 				if (board[j][i] == -1) //允许移动,有效位置
 				{
+					//红方阵营
+					//红帅
 					if (hongshuai.inStack == 1)
 					{
 						board[j][i] = 1;
@@ -456,10 +522,40 @@ void movePoint(int a, int b)
 							cleanN1();
 						}
 					}
-					
+					//黑方阵营
+					//黑将
+					if (heijiang.inStack == 1)
+					{
+						board[j][i] = 1;
+						board[heijiang.m_y][heijiang.m_x] = 0;
+						heijiang.m_x = i;
+						heijiang.m_y = j;
+						heijiang.b_x = rePiece(heijiang.m_x);
+						heijiang.b_y = rePiece(heijiang.m_y);
+						heijiang.inStack = 0;
+						istap = 0;
+						cleanN1();
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (heishi[k].inStack == 1)
+						{
+							board[j][i] = 1;
+							board[heishi[k].m_y][heishi[k].m_x] = 0;
+							heishi[k].m_x = i;
+							heishi[k].m_y = j;
+							heishi[k].b_x = rePiece(heishi[k].m_x);
+							heishi[k].b_y = rePiece(heishi[k].m_y);
+							heishi[k].inStack = 0;
+							istap = 0;
+							cleanN1();
+						}
+					}
 				}
 				if (board[j][i] == -2)//吃子
 				{
+					//红方阵营
+					//红帅
 					if (hongshuai.inStack == 1)
 					{
 						board[j][i] = 1;
@@ -487,6 +583,38 @@ void movePoint(int a, int b)
 							hongshi[k].b_x = rePiece(hongshi[k].m_x);
 							hongshi[k].b_y = rePiece(hongshi[k].m_y);
 							hongshi[k].inStack = 0;
+							istap = 0;
+							cleanN1();
+						}
+					}
+					//黑方阵营
+					if (heijiang.inStack == 1)
+					{
+						board[j][i] = 1;
+						//判断什么子被吃了
+						remove(i, j);
+						board[heijiang.m_y][heijiang.m_x] = 0;
+						heijiang.m_x = i;
+						heijiang.m_y = j;
+						heijiang.b_x = rePiece(heijiang.m_x);
+						heijiang.b_y = rePiece(heijiang.m_y);
+						heijiang.inStack = 0;
+						istap = 0;
+						cleanN1();
+					}
+					//黑士
+					for (int k = 0; k < 2; k++)
+					{
+						if (heishi[k].inStack == 1)
+						{
+							board[j][i] = 1;
+							remove(i, j);
+							board[heishi[k].m_y][heishi[k].m_x] = 0;
+							heishi[k].m_x = i;
+							heishi[k].m_y = j;
+							heishi[k].b_x = rePiece(heishi[k].m_x);
+							heishi[k].b_y = rePiece(heishi[k].m_y);
+							heishi[k].inStack = 0;
 							istap = 0;
 							cleanN1();
 						}
@@ -685,8 +813,8 @@ void startup()
 	hongma[1].inStack = 0;
 	//车
 	hongche[0].alife = hongche[1].alife = hongche[0].camp = hongche[1].camp = 1;
-	hongche[0].m_x = 0;
-	hongche[0].m_y = 9;
+	hongche[0].m_x = 3;
+	hongche[0].m_y = 2;
 	hongche[0].b_x = rePiece(hongche[0].m_x);
 	hongche[0].b_y = rePiece(hongche[0].m_y);
 	hongche[0].inStack = 0;
@@ -773,8 +901,8 @@ void startup()
 	//车
 	heiche[0].alife = heiche[1].alife = 1;
 	heiche[0].camp = heiche[1].camp = 2;
-	heiche[0].m_x = 4;
-	heiche[0].m_y = 8;
+	heiche[0].m_x = 3;
+	heiche[0].m_y = 7;
 	heiche[0].b_x = rePiece(heiche[0].m_x);
 	heiche[0].b_y = rePiece(heiche[0].m_y);
 	heiche[0].inStack = 0;
