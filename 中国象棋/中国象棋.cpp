@@ -15,29 +15,30 @@ void cleanN1();
 void remove(int, int);
 void resta();
 int istap = 0;
+int isRed = 1;
 int board[10][9]={
-	0,2,2,2,2,2,2,2,2,
+	2,2,2,2,2,2,2,2,2,
 	0,0,0,0,0,0,0,0,0,
-	0,2,0,1,0,0,0,2,0,
+	0,2,0,0,0,0,0,2,0,
 	2,0,2,0,2,0,2,0,2,
 	0,0,0,0,0,0,0,0,0,
-	0,0,2,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
 	1,0,1,0,1,0,1,0,1,
 	0,1,0,0,0,0,0,1,0,
 	0,0,0,0,0,0,0,0,0,
-	0,1,1,1,1,1,1,1,1
+	1,1,1,1,1,1,1,1,1
 };
 int board2[10][9] = {
-	0,2,2,2,2,2,2,2,2,
+	2,2,2,2,2,2,2,2,2,
 	0,0,0,0,0,0,0,0,0,
-	0,2,0,1,0,0,0,2,0,
+	0,2,0,0,0,0,0,2,0,
 	2,0,2,0,2,0,2,0,2,
 	0,0,0,0,0,0,0,0,0,
-	0,0,2,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,
 	1,0,1,0,1,0,1,0,1,
 	0,1,0,0,0,0,0,1,0,
 	0,0,0,0,0,0,0,0,0,
-	0,1,1,1,1,1,1,1,1
+	1,1,1,1,1,1,1,1,1
 };
 struct hongChe {
 	int b_x, b_y;
@@ -86,6 +87,7 @@ struct hongBing {
 	int m_x, m_y;
 	int camp;
 	int alife, inStack;
+	int isCross;
 };
 struct hongBing hongbing[5];
 struct heiChe {
@@ -135,6 +137,7 @@ struct heiZu {
 	int m_x, m_y;
 	int camp;
 	int alife, inStack;
+	int isCross;
 };
 struct heiZu heizu[5];
 IMAGE img_hongche,img_hongma,img_hongxiang,img_hongshi,img_hongshuai,img_hongpao,img_hongbing;
@@ -184,7 +187,7 @@ void remove(int a, int b)
 	//红帅
 	if (hongshuai.m_x == a && hongshuai.m_y == b)
 	{
-		hongshuai.alife == 0;
+		hongshuai.alife = 0;
 	}
 	//红士
 	for (int i = 0; i < 2; i++)
@@ -237,7 +240,7 @@ void remove(int a, int b)
 	//黑方阵营
 	if (heijiang.m_x == a && heijiang.m_y == b)
 	{
-		heijiang.alife == 0;
+		heijiang.alife = 0;
 	}
 	for (int i = 0; i < 2; i++)
 	{
@@ -562,22 +565,219 @@ void updateIstap() //此函数仅做可能位置显示，不移动
 	{
 		if (hongche[i].inStack == 1)
 		{
-
+			for (int k = hongche[i].m_x - 1; k >= 0; k--)
+			{
+				if (board2[hongche[i].m_y][k] == 0)
+				{
+					board[hongche[i].m_y][k] = -1;
+				}
+				else if (board2[hongche[i].m_y][k] == 2)
+				{
+					board[hongche[i].m_y][k] = -2;
+					break;
+				}
+				else if (board2[hongche[i].m_y][k] == 1)
+				{
+					break;
+				}
+			}
+			for (int k = hongche[i].m_x + 1; k <= 8; k++)
+			{
+				if (board2[hongche[i].m_y][k] == 0)
+				{
+					board[hongche[i].m_y][k] = -1;
+				}
+				else if (board2[hongche[i].m_y][k] == 2)
+				{
+					board[hongche[i].m_y][k] = -2;
+					break;
+				}
+				else if (board2[hongche[i].m_y][k] == 1)
+				{
+					break;
+				}
+			}
+			for (int k = hongche[i].m_y - 1; k >= 0; k--)
+			{
+				if (board2[k][hongche[i].m_x] == 0)
+				{
+					board[k][hongche[i].m_x] = -1;
+				}
+				else if (board2[k][hongche[i].m_x] == 2)
+				{
+					board[k][hongche[i].m_x] = -2;
+					break;
+				}
+				else if (board2[k][hongche[i].m_x] == 1)
+				{
+					break;
+				}
+			}
+			for (int k = hongche[i].m_y + 1; k <= 9; k++)
+			{
+				if (board2[k][hongche[i].m_x] == 0)
+				{
+					board[k][hongche[i].m_x] = -1;
+				}
+				else if (board2[k][hongche[i].m_x] == 2)
+				{
+					board[k][hongche[i].m_x] = -2;
+					break;
+				}
+				else if (board2[k][hongche[i].m_x] == 1)
+				{
+					break;
+				}
+			}
 		}
 	}
 	for (int i = 0; i < 2; i++)
 	{
 		if (hongpao[i].inStack == 1)
 		{
-
+			//向左
+			int isr = 0;
+			for (int k = hongpao[i].m_x - 1; k >= 0; k--)
+			{
+				if (isr == 0)//还没有相遇
+				{
+					if (board2[hongpao[i].m_y][k] == 0)
+					{
+						board[hongpao[i].m_y][k] = -1;
+					}
+					if (board2[hongpao[i].m_y][k] == 1 || board2[hongpao[i].m_y][k] == 2)
+					{
+						isr = 1;
+					}
+				}
+				else if (isr == 1)
+				{
+					if (board2[hongpao[i].m_y][k] == 2)
+					{
+						board[hongpao[i].m_y][k] = -2;
+						break;
+					}
+				}
+			}
+			//向右
+			isr = 0;
+			for (int k = hongpao[i].m_x + 1; k <=8; k++)
+			{
+				if (isr == 0)//还没有相遇
+				{
+					if (board2[hongpao[i].m_y][k] == 0)
+					{
+						board[hongpao[i].m_y][k] = -1;
+					}
+					if (board2[hongpao[i].m_y][k] == 1 || board2[hongpao[i].m_y][k] == 2)
+					{
+						isr = 1;
+					}
+				}
+				else if (isr == 1)
+				{
+					if (board2[hongpao[i].m_y][k] == 2)
+					{
+						board[hongpao[i].m_y][k] = -2;
+						break;
+					}
+				}
+			}
+			//向上
+			isr = 0;
+			for (int k = hongpao[i].m_y - 1; k >= 0; k--)
+			{
+				if (isr == 0)//还没有相遇
+				{
+					if (board2[k][hongpao[i].m_x] == 0)
+					{
+						board[k][hongpao[i].m_x] = -1;
+					}
+					if (board2[k][hongpao[i].m_x] == 1 || board2[k][hongpao[i].m_x] == 2)
+					{
+						isr = 1;
+					}
+				}
+				else if (isr == 1)
+				{
+					if (board2[k][hongpao[i].m_x] == 2)
+					{
+						board[k][hongpao[i].m_x] = -2;
+						break;
+					}
+				}
+			}
+			//向下
+			isr = 0;
+			for (int k = hongpao[i].m_y + 1; k <=9; k++)
+			{
+				if (isr == 0)//还没有相遇
+				{
+					if (board2[k][hongpao[i].m_x] == 0)
+					{
+						board[k][hongpao[i].m_x] = -1;
+					}
+					if (board2[k][hongpao[i].m_x] == 1 || board2[k][hongpao[i].m_x] == 2)
+					{
+						isr = 1;
+					}
+				}
+				else if (isr == 1)
+				{
+					if (board2[k][hongpao[i].m_x] == 2)
+					{
+						board[k][hongpao[i].m_x] = -2;
+						break;
+					}
+				}
+			}
 		}
 	}
 	for (int i = 0; i < 5; i++)
 	{
 		if (hongbing[i].inStack == 1)
 		{
-
+			//向上
+			if (hongbing[i].m_y - 1 >= 0)
+			{
+				if (board2[hongbing[i].m_y - 1][hongbing[i].m_x] == 0)
+				{
+					board[hongbing[i].m_y - 1][hongbing[i].m_x] = -1;
+				}
+				else if (board2[hongbing[i].m_y - 1][hongbing[i].m_x] == 2)
+				{
+					board[hongbing[i].m_y - 1][hongbing[i].m_x] = -2;
+				}
+			}
+			if (hongbing[i].isCross == 1)
+		    {
+				//向左
+				if (hongbing[i].m_x - 1 >= 0)
+				{
+					if (board2[hongbing[i].m_y][hongbing[i].m_x - 1] == 0)
+					{
+						board[hongbing[i].m_y][hongbing[i].m_x - 1] = -1;
+					}
+					else if (board2[hongbing[i].m_y][hongbing[i].m_x - 1] == 2)
+					{
+						board[hongbing[i].m_y][hongbing[i].m_x - 1] = -2;
+					}
+				}
+				//向右
+				if (hongbing[i].m_x + 1 <= 8)
+				{
+					if (board2[hongbing[i].m_y][hongbing[i].m_x + 1] == 0)
+					{
+						board[hongbing[i].m_y][hongbing[i].m_x + 1] = -1;
+					}
+					else if (board2[hongbing[i].m_y][hongbing[i].m_x + 1] == 2)
+					{
+						board[hongbing[i].m_y][hongbing[i].m_x + 1] = -2;
+					}
+				}
+			}
 		}
+		
 	}
 	//
 	if (heijiang.inStack == 1)
@@ -732,28 +932,319 @@ void updateIstap() //此函数仅做可能位置显示，不移动
 	{
 		if (heima[i].inStack == 1)
 		{
-
+			//左上
+			if (heima[i].m_x - 2 >= 0 && heima[i].m_y - 1 >= 0)
+			{
+				if (board2[heima[i].m_y - 1][heima[i].m_x - 2] == 0 && board2[heima[i].m_y][heima[i].m_x - 1] == 0)
+				{
+					board[heima[i].m_y - 1][heima[i].m_x - 2] = -1;
+				}
+				else if (board2[heima[i].m_y - 1][heima[i].m_x - 2] == 1 && board2[heima[i].m_y][heima[i].m_x - 1] == 0)
+				{
+					board[heima[i].m_y - 1][heima[i].m_x - 2] = -3;
+				}
+			}
+			//左下
+			if (heima[i].m_x - 2 >= 0 && heima[i].m_y + 1 <= 9)
+			{
+				if (board2[heima[i].m_y + 1][heima[i].m_x - 2] == 0 && board2[heima[i].m_y][heima[i].m_x - 1] == 0)
+				{
+					board[heima[i].m_y + 1][heima[i].m_x - 2] = -1;
+				}
+				else if (board2[heima[i].m_y + 1][heima[i].m_x - 2] == 1 && board2[heima[i].m_y][heima[i].m_x - 1] == 0)
+				{
+					board[heima[i].m_y + 1][heima[i].m_x - 2] = -3;
+				}
+			}
+			//上左
+			if (heima[i].m_x - 1 >= 0 && heima[i].m_y - 2 >= 0)
+			{
+				if (board2[heima[i].m_y - 2][heima[i].m_x - 1] == 0 && board2[heima[i].m_y - 1][heima[i].m_x] == 0)
+				{
+					board[heima[i].m_y - 2][heima[i].m_x - 1] = -1;
+				}
+				else if (board2[heima[i].m_y - 2][heima[i].m_x - 1] == 1 && board2[heima[i].m_y - 1][heima[i].m_x] == 0)
+				{
+					board[heima[i].m_y - 2][heima[i].m_x - 1] = -3;
+				}
+			}
+			//上右
+			if (heima[i].m_x + 1 <= 8 && heima[i].m_y - 2 >= 0)
+			{
+				if (board2[heima[i].m_y - 2][heima[i].m_x + 1] == 0 && board2[heima[i].m_y - 1][heima[i].m_x] == 0)
+				{
+					board[heima[i].m_y - 2][heima[i].m_x + 1] = -1;
+				}
+				else if (board2[heima[i].m_y - 2][heima[i].m_x + 1] == 1 && board2[heima[i].m_y - 1][heima[i].m_x] == 0)
+				{
+					board[heima[i].m_y - 2][heima[i].m_x + 1] = -3;
+				}
+			}
+			//右上
+			if (heima[i].m_x + 2 <= 8 && heima[i].m_y - 1 >= 0)
+			{
+				if (board2[heima[i].m_y - 1][heima[i].m_x + 2] == 0 && board2[heima[i].m_y][heima[i].m_x + 1] == 0)
+				{
+					board[heima[i].m_y - 1][heima[i].m_x + 2] = -1;
+				}
+				else if (board2[heima[i].m_y - 1][heima[i].m_x + 2] == 1 && board2[heima[i].m_y][heima[i].m_x + 1] == 0)
+				{
+					board[heima[i].m_y - 1][heima[i].m_x + 2] = -3;
+				}
+			}
+			//右下
+			if (heima[i].m_x + 2 <= 8 && heima[i].m_y + 1 <= 9)
+			{
+				if (board2[heima[i].m_y + 1][heima[i].m_x + 2] == 0 && board2[heima[i].m_y][heima[i].m_x + 1] == 0)
+				{
+					board[heima[i].m_y + 1][heima[i].m_x + 2] = -1;
+				}
+				else if (board2[heima[i].m_y + 1][heima[i].m_x + 2] == 1 && board2[heima[i].m_y][heima[i].m_x + 1] == 0)
+				{
+					board[heima[i].m_y + 1][heima[i].m_x + 2] = -3;
+				}
+			}
+			//下左
+			if (heima[i].m_x - 1 >= 0 && heima[i].m_y + 2 <= 9)
+			{
+				if (board2[heima[i].m_y + 2][heima[i].m_x - 1] == 0 && board2[heima[i].m_y + 1][heima[i].m_x] == 0)
+				{
+					board[heima[i].m_y + 2][heima[i].m_x - 1] = -1;
+				}
+				else if (board2[heima[i].m_y + 2][heima[i].m_x - 1] == 1 && board2[heima[i].m_y + 1][heima[i].m_x] == 0)
+				{
+					board[heima[i].m_y + 2][heima[i].m_x - 1] = -3;
+				}
+			}
+			//下右
+			if (heima[i].m_x + 1 <= 8 && heima[i].m_y + 2 <= 9)
+			{
+				if (board2[heima[i].m_y + 2][heima[i].m_x + 1] == 0 && board2[heima[i].m_y + 1][heima[i].m_x] == 0)
+				{
+					board[heima[i].m_y + 2][heima[i].m_x + 1] = -1;
+				}
+				else if (board2[heima[i].m_y + 2][heima[i].m_x + 1] == 1 && board2[heima[i].m_y + 1][heima[i].m_x] == 0)
+				{
+					board[heima[i].m_y + 2][heima[i].m_x + 1] = -3;
+				}
+			}
 		}
 	}
 	for (int i = 0; i < 2; i++)
 	{
 		if (heiche[i].inStack == 1)
 		{
-
+			for (int k = heiche[i].m_x - 1; k >= 0; k--)
+			{
+				if (board2[heiche[i].m_y][k] == 0)
+				{
+					board[heiche[i].m_y][k] = -1;
+				}
+				else if (board2[heiche[i].m_y][k] == 1)
+				{
+					board[heiche[i].m_y][k] = -3;
+					break;
+				}
+				else if (board2[heiche[i].m_y][k] == 2)
+				{
+					break;
+				}
+			}
+			for (int k = heiche[i].m_x + 1; k <= 8; k++)
+			{
+				if (board2[heiche[i].m_y][k] == 0)
+				{
+					board[heiche[i].m_y][k] = -1;
+				}
+				else if (board2[heiche[i].m_y][k] == 1)
+				{
+					board[heiche[i].m_y][k] = -3;
+					break;
+				}
+				else if (board2[heiche[i].m_y][k] == 2)
+				{
+					break;
+				}
+			}
+			for (int k = heiche[i].m_y - 1; k >= 0; k--)
+			{
+				if (board2[k][heiche[i].m_x] == 0)
+				{
+					board[k][heiche[i].m_x] = -1;
+				}
+				else if (board2[k][heiche[i].m_x] == 1)
+				{
+					board[k][heiche[i].m_x] = -3;
+					break;
+				}
+				else if (board2[k][heiche[i].m_x] == 2)
+				{
+					break;
+				}
+			}
+			for (int k = heiche[i].m_y + 1; k <= 9; k++)
+			{
+				if (board2[k][heiche[i].m_x] == 0)
+				{
+					board[k][heiche[i].m_x] = -1;
+				}
+				else if (board2[k][heiche[i].m_x] == 1)
+				{
+					board[k][heiche[i].m_x] = -3;
+					break;
+				}
+				else if (board2[k][heiche[i].m_x] == 2)
+				{
+					break;
+				}
+			}
 		}
 	}
 	for (int i = 0; i < 2; i++)
 	{
 		if (heipao[i].inStack == 1)
 		{
-
+			//向左
+			int isr = 0;
+			for (int k = heipao[i].m_x - 1; k >= 0; k--)
+			{
+				if (isr == 0)//还没有相遇
+				{
+					if (board2[heipao[i].m_y][k] == 0)
+					{
+						board[heipao[i].m_y][k] = -1;
+					}
+					if (board2[heipao[i].m_y][k] == 1 || board2[heipao[i].m_y][k] == 2)
+					{
+						isr = 1;
+					}
+				}
+				else if (isr == 1)
+				{
+					if (board2[heipao[i].m_y][k] == 1)
+					{
+						board[heipao[i].m_y][k] = -3;
+						break;
+					}
+				}
+			}
+			//向右
+			isr = 0;
+			for (int k = heipao[i].m_x + 1; k <= 8; k++)
+			{
+				if (isr == 0)//还没有相遇
+				{
+					if (board2[heipao[i].m_y][k] == 0)
+					{
+						board[heipao[i].m_y][k] = -1;
+					}
+					if (board2[heipao[i].m_y][k] == 1 || board2[heipao[i].m_y][k] == 2)
+					{
+						isr = 1;
+					}
+				}
+				else if (isr == 1)
+				{
+					if (board2[heipao[i].m_y][k] == 1)
+					{
+						board[heipao[i].m_y][k] = -3;
+						break;
+					}
+				}
+			}
+			//向上
+			isr = 0;
+			for (int k = heipao[i].m_y - 1; k >= 0; k--)
+			{
+				if (isr == 0)//还没有相遇
+				{
+					if (board2[k][heipao[i].m_x] == 0)
+					{
+						board[k][heipao[i].m_x] = -1;
+					}
+					if (board2[k][heipao[i].m_x] == 1 || board2[k][heipao[i].m_x] == 2)
+					{
+						isr = 1;
+					}
+				}
+				else if (isr == 1)
+				{
+					if (board2[k][heipao[i].m_x] == 1)
+					{
+						board[k][heipao[i].m_x] = -3;
+						break;
+					}
+				}
+			}
+			//向下
+			isr = 0;
+			for (int k = heipao[i].m_y + 1; k <= 9; k++)
+			{
+				if (isr == 0)//还没有相遇
+				{
+					if (board2[k][heipao[i].m_x] == 0)
+					{
+						board[k][heipao[i].m_x] = -1;
+					}
+					if (board2[k][heipao[i].m_x] == 1 || board2[k][heipao[i].m_x] == 2)
+					{
+						isr = 1;
+					}
+				}
+				else if (isr == 1)
+				{
+					if (board2[k][heipao[i].m_x] == 1)
+					{
+						board[k][heipao[i].m_x] = -3;
+						break;
+					}
+				}
+			}
 		}
 	}
 	for (int i = 0; i < 5; i++)
 	{
 		if (heizu[i].inStack == 1)
 		{
-
+			//向下
+			if (heizu[i].m_y + 1 <= 9)
+			{
+				if (board2[heizu[i].m_y + 1][heizu[i].m_x] == 0)
+				{
+					board[heizu[i].m_y + 1][heizu[i].m_x] = -1;
+				}
+				else if (board2[heizu[i].m_y + 1][heizu[i].m_x] == 1)
+				{
+					board[heizu[i].m_y + 1][heizu[i].m_x] = -3;
+				}
+			}
+			if (heizu[i].isCross == 1)
+			{
+				//向左
+				if (heizu[i].m_x - 1 >= 0)
+				{
+					if (board2[heizu[i].m_y][heizu[i].m_x - 1] == 0)
+					{
+						board[heizu[i].m_y][heizu[i].m_x - 1] = -1;
+					}
+					else if (board2[heizu[i].m_y][heizu[i].m_x - 1] == 1)
+					{
+						board[heizu[i].m_y][heizu[i].m_x - 1] = -3;
+					}
+				}
+				//向右
+				if (heizu[i].m_x + 1 <= 8)
+				{
+					if (board2[heizu[i].m_y][heizu[i].m_x + 1] == 0)
+					{
+						board[heizu[i].m_y][heizu[i].m_x + 1] = -1;
+					}
+					else if (board2[heizu[i].m_y][heizu[i].m_x + 1] == 1)
+					{
+						board[heizu[i].m_y][heizu[i].m_x + 1] = -3;
+					}
+				}
+			}
 		}
 	}
 }
@@ -767,6 +1258,8 @@ void updateWithInput()
 		{
 			if (istap == 0) {
 				searchPoint(m.x, m.y);
+				m.x = 0;
+				m.y = 0;
 			}
 			if (istap == 1) //此时已经选定了某一个棋子，如果点击了这个棋子有效的位置，棋子移动，否则本次选择取消
 			{
@@ -798,6 +1291,7 @@ void movePoint(int a, int b)
 						hongshuai.b_y = rePiece(hongshuai.m_y);
 						hongshuai.inStack = 0;
 						istap = 0;
+						isRed = 0;
 						resta();
 					}
 					//红士
@@ -813,6 +1307,7 @@ void movePoint(int a, int b)
 							hongshi[k].b_y = rePiece(hongshi[k].m_y);
 							hongshi[k].inStack = 0;
 							istap = 0;
+							isRed = 0;
 							resta();
 						}
 					}
@@ -829,11 +1324,12 @@ void movePoint(int a, int b)
 							hongxiang[k].b_y = rePiece(hongxiang[k].m_y);
 							hongxiang[k].inStack = 0;
 							istap = 0;
+							isRed = 0;
 							resta();
 						}
 					}
 					//红马
-					 for (int k = 0; k < 2; k++)
+					for (int k = 0; k < 2; k++)
 					{
 						if (hongma[k].inStack == 1)
 						{
@@ -845,6 +1341,62 @@ void movePoint(int a, int b)
 							hongma[k].b_y = rePiece(hongma[k].m_y);
 							hongma[k].inStack = 0;
 							istap = 0;
+							isRed = 0;
+							resta();
+						}
+					}
+					//红车
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongche[k].inStack == 1)
+						{
+							board2[j][i] = 1;
+							board2[hongche[k].m_y][hongche[k].m_x] = 0;
+							hongche[k].m_x = i;
+							hongche[k].m_y = j;
+							hongche[k].b_x = rePiece(hongche[k].m_x);
+							hongche[k].b_y = rePiece(hongche[k].m_y);
+							hongche[k].inStack = 0;
+							istap = 0;
+							isRed = 0;
+							resta();
+						}
+					}
+					//红炮
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongpao[k].inStack == 1)
+						{
+							board2[j][i] = 1;
+							board2[hongpao[k].m_y][hongpao[k].m_x] = 0;
+							hongpao[k].m_x = i;
+							hongpao[k].m_y = j;
+							hongpao[k].b_x = rePiece(hongpao[k].m_x);
+							hongpao[k].b_y = rePiece(hongpao[k].m_y);
+							hongpao[k].inStack = 0;
+							istap = 0;
+							isRed = 0;
+							resta();
+						}
+					}
+					//红兵
+					for (int k = 0; k < 5; k++)
+					{
+						if (hongbing[k].inStack == 1)
+						{
+							board2[j][i] = 1;
+							board2[hongbing[k].m_y][hongbing[k].m_x] = 0;
+							hongbing[k].m_x = i;
+							hongbing[k].m_y = j;
+							hongbing[k].b_x = rePiece(hongbing[k].m_x);
+							hongbing[k].b_y = rePiece(hongbing[k].m_y);
+							if (hongbing[k].m_y < 5)
+							{
+								hongbing[k].isCross = 1;
+							}
+							hongbing[k].inStack = 0;
+							istap = 0;
+							isRed = 0;
 							resta();
 						}
 					}
@@ -860,6 +1412,7 @@ void movePoint(int a, int b)
 						heijiang.b_y = rePiece(heijiang.m_y);
 						heijiang.inStack = 0;
 						istap = 0;
+						isRed = 1;
 						resta();
 					}
 					for (int k = 0; k < 2; k++)
@@ -874,6 +1427,7 @@ void movePoint(int a, int b)
 							heishi[k].b_y = rePiece(heishi[k].m_y);
 							heishi[k].inStack = 0;
 							istap = 0;
+							isRed = 1;
 							resta();
 						}
 					}
@@ -890,6 +1444,79 @@ void movePoint(int a, int b)
 							heixiang[k].b_y = rePiece(heixiang[k].m_y);
 							heixiang[k].inStack = 0;
 							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+					//黑马
+					for (int k = 0; k < 2; k++)
+					{
+						if (heima[k].inStack == 1)
+						{
+							board2[j][i] = 2;
+							board2[heima[k].m_y][heima[k].m_x] = 0;
+							heima[k].m_x = i;
+							heima[k].m_y = j;
+							heima[k].b_x = rePiece(heima[k].m_x);
+							heima[k].b_y = rePiece(heima[k].m_y);
+							heima[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+					//黑车
+					for (int k = 0; k < 2; k++)
+					{
+						if (heiche[k].inStack == 1)
+						{
+							board2[j][i] = 2;
+							board2[heiche[k].m_y][heiche[k].m_x] = 0;
+							heiche[k].m_x = i;
+							heiche[k].m_y = j;
+							heiche[k].b_x = rePiece(heiche[k].m_x);
+							heiche[k].b_y = rePiece(heiche[k].m_y);
+							heiche[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+					//黑炮
+					for (int k = 0; k < 2; k++)
+					{
+						if (heipao[k].inStack == 1)
+						{
+							board2[j][i] = 2;
+							board2[heipao[k].m_y][heipao[k].m_x] = 0;
+							heipao[k].m_x = i;
+							heipao[k].m_y = j;
+							heipao[k].b_x = rePiece(heipao[k].m_x);
+							heipao[k].b_y = rePiece(heipao[k].m_y);
+							heipao[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+					//黑卒
+					for (int k = 0; k < 5; k++)
+					{
+						if (heizu[k].inStack == 1)
+						{
+							board2[j][i] = 2;
+							board2[heizu[k].m_y][heizu[k].m_x] = 0;
+							heizu[k].m_x = i;
+							heizu[k].m_y = j;
+							heizu[k].b_x = rePiece(heizu[k].m_x);
+							heizu[k].b_y = rePiece(heizu[k].m_y);
+							if (heizu[k].m_y > 4)
+							{
+								heizu[k].isCross = 1;
+							}
+							heizu[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
 							resta();
 						}
 					}
@@ -910,6 +1537,7 @@ void movePoint(int a, int b)
 						hongshuai.b_y = rePiece(hongshuai.m_y);
 						hongshuai.inStack = 0;
 						istap = 0;
+						isRed = 0;
 						resta();
 					}
 					//红士
@@ -926,6 +1554,7 @@ void movePoint(int a, int b)
 							hongshi[k].b_y = rePiece(hongshi[k].m_y);
 							hongshi[k].inStack = 0;
 							istap = 0;
+							isRed = 0;
 							resta();
 						}
 					}
@@ -943,11 +1572,12 @@ void movePoint(int a, int b)
 							hongxiang[k].b_y = rePiece(hongxiang[k].m_y);
 							hongxiang[k].inStack = 0;
 							istap = 0;
+							isRed = 0;
 							resta();
 						}
 					}
 					//红马
-					 for (int k = 0; k < 2; k++)
+					for (int k = 0; k < 2; k++)
 					{
 						if (hongma[k].inStack == 1)
 						{
@@ -960,6 +1590,64 @@ void movePoint(int a, int b)
 							hongma[k].b_y = rePiece(hongma[k].m_y);
 							hongma[k].inStack = 0;
 							istap = 0;
+							isRed = 0;
+							resta();
+						}
+					}
+					//红车
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongche[k].inStack == 1)
+						{
+							board2[j][i] = 1;
+							remove(i, j);
+							board2[hongche[k].m_y][hongche[k].m_x] = 0;
+							hongche[k].m_x = i;
+							hongche[k].m_y = j;
+							hongche[k].b_x = rePiece(hongche[k].m_x);
+							hongche[k].b_y = rePiece(hongche[k].m_y);
+							hongche[k].inStack = 0;
+							istap = 0;
+							isRed = 0;
+							resta();
+						}
+					}
+					//红炮
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongpao[k].inStack == 1)
+						{
+							board2[j][i] = 1;
+							remove(i, j);
+							board2[hongpao[k].m_y][hongpao[k].m_x] = 0;
+							hongpao[k].m_x = i;
+							hongpao[k].m_y = j;
+							hongpao[k].b_x = rePiece(hongpao[k].m_x);
+							hongpao[k].b_y = rePiece(hongpao[k].m_y);
+							hongpao[k].inStack = 0;
+							istap = 0;
+							isRed = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 5; k++)
+					{
+						if (hongbing[k].inStack == 1)
+						{
+							board2[j][i] = 1;
+							remove(i, j);
+							board2[hongbing[k].m_y][hongbing[k].m_x] = 0;
+							hongbing[k].m_x = i;
+							hongbing[k].m_y = j;
+							hongbing[k].b_x = rePiece(hongbing[k].m_x);
+							hongbing[k].b_y = rePiece(hongbing[k].m_y);
+							if (hongbing[k].m_y < 5)
+							{
+								hongbing[k].isCross = 1;
+							}
+							hongbing[k].inStack = 0;
+							istap = 0;
+							isRed = 0;
 							resta();
 						}
 					}
@@ -976,6 +1664,7 @@ void movePoint(int a, int b)
 						heijiang.b_y = rePiece(heijiang.m_y);
 						heijiang.inStack = 0;
 						istap = 0;
+						isRed = 1;
 						resta();
 					}
 					//黑士
@@ -992,6 +1681,7 @@ void movePoint(int a, int b)
 							heishi[k].b_y = rePiece(heishi[k].m_y);
 							heishi[k].inStack = 0;
 							istap = 0;
+							isRed = 1;
 							resta();
 						}
 					}
@@ -1008,6 +1698,209 @@ void movePoint(int a, int b)
 							heixiang[k].b_x = rePiece(heixiang[k].m_x);
 							heixiang[k].b_y = rePiece(heixiang[k].m_y);
 							heixiang[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+					//黑马
+					for (int k = 0; k < 2; k++)
+					{
+						if (heima[k].inStack == 1)
+						{
+							board2[j][i] = 2;
+							remove(i, j);
+							board2[heima[k].m_y][heima[k].m_x] = 0;
+							heima[k].m_x = i;
+							heima[k].m_y = j;
+							heima[k].b_x = rePiece(heima[k].m_x);
+							heima[k].b_y = rePiece(heima[k].m_y);
+							heima[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+					//黑车
+					for (int k = 0; k < 2; k++)
+					{
+						if (heiche[k].inStack == 1)
+						{
+							board2[j][i] = 2;
+							remove(i, j);
+							board2[heiche[k].m_y][heiche[k].m_x] = 0;
+							heiche[k].m_x = i;
+							heiche[k].m_y = j;
+							heiche[k].b_x = rePiece(heiche[k].m_x);
+							heiche[k].b_y = rePiece(heiche[k].m_y);
+							heiche[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+					//黑炮
+					for (int k = 0; k < 2; k++)
+					{
+						if (heipao[k].inStack == 1)
+						{
+							board2[j][i] = 2;
+							remove(i, j);
+							board2[heipao[k].m_y][heipao[k].m_x] = 0;
+							heipao[k].m_x = i;
+							heipao[k].m_y = j;
+							heipao[k].b_x = rePiece(heipao[k].m_x);
+							heipao[k].b_y = rePiece(heipao[k].m_y);
+							heipao[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+					//黑卒
+					for (int k = 0; k < 5; k++)
+					{
+						if (heizu[k].inStack == 1)
+						{
+							board2[j][i] = 2;
+							remove(i, j);
+							board2[heizu[k].m_y][heizu[k].m_x] = 0;
+							heizu[k].m_x = i;
+							heizu[k].m_y = j;
+							heizu[k].b_x = rePiece(heizu[k].m_x);
+							heizu[k].b_y = rePiece(heizu[k].m_y);
+							if (heizu[k].m_y > 4)
+							{
+								heizu[k].isCross = 1;
+							}
+							heizu[k].inStack = 0;
+							istap = 0;
+							isRed = 1;
+							resta();
+						}
+					}
+				}
+				else if (board[j][i] == 1)
+				{
+					if (hongshuai.m_x == i && hongshuai.m_y == j)
+					{
+						hongshuai.inStack = 0;
+						istap = 0;
+						resta();
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongshi[k].m_x == i && hongshi[k].m_y == j)
+						{
+							hongshi[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongxiang[k].m_x == i && hongxiang[k].m_y == j)
+						{
+							hongxiang[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongma[k].m_x == i && hongma[k].m_y == j)
+						{
+							hongma[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongche[k].m_x == i && hongche[k].m_y == j)
+						{
+							hongche[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (hongpao[k].m_x == i && hongpao[k].m_y == j)
+						{
+							hongpao[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 5; k++)
+					{
+						if (hongbing[k].m_x == i && hongbing[k].m_y == j)
+						{
+							hongbing[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+				}
+				else if (board[j][i] == 2)
+				{
+					if (heijiang.m_x == i && heijiang.m_y == j)
+					{
+						heijiang.inStack = 0;
+						istap = 0;
+						resta();
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (heishi[k].m_x == i && heishi[k].m_y == j)
+						{
+							heishi[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (heixiang[k].m_x == i && heixiang[k].m_y == j)
+						{
+							heixiang[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (heima[k].m_x == i && heima[k].m_y == j)
+						{
+							heima[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (heiche[k].m_x == i && heiche[k].m_y == j)
+						{
+							heiche[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 2; k++)
+					{
+						if (heipao[k].m_x == i && heipao[k].m_y == j)
+						{
+							heipao[k].inStack = 0;
+							istap = 0;
+							resta();
+						}
+					}
+					for (int k = 0; k < 5; k++)
+					{
+						if (heizu[k].m_x == i && heizu[k].m_y == j)
+						{
+							heizu[k].inStack = 0;
 							istap = 0;
 							resta();
 						}
@@ -1207,8 +2100,8 @@ void startup()
 	hongma[1].inStack = 0;
 	//车
 	hongche[0].alife = hongche[1].alife = hongche[0].camp = hongche[1].camp = 1;
-	hongche[0].m_x = 3;
-	hongche[0].m_y = 2;
+	hongche[0].m_x = 0;
+	hongche[0].m_y = 9;
 	hongche[0].b_x = rePiece(hongche[0].m_x);
 	hongche[0].b_y = rePiece(hongche[0].m_y);
 	hongche[0].inStack = 0;
@@ -1240,6 +2133,7 @@ void startup()
 		hongbing[i].b_x = rePiece(hongbing[i].m_x);
 		hongbing[i].b_y = rePiece(hongbing[i].m_y);
 		hongbing[i].inStack = 0;
+		hongbing[i].isCross = 0;
 	}
 	//初始化黑方阵营数据
 	//将
@@ -1295,8 +2189,8 @@ void startup()
 	//车
 	heiche[0].alife = heiche[1].alife = 1;
 	heiche[0].camp = heiche[1].camp = 2;
-	heiche[0].m_x = 2;
-	heiche[0].m_y = 5;
+	heiche[0].m_x = 0;
+	heiche[0].m_y = 0;
 	heiche[0].b_x = rePiece(heiche[0].m_x);
 	heiche[0].b_y = rePiece(heiche[0].m_y);
 	heiche[0].inStack = 0;
@@ -1330,6 +2224,7 @@ void startup()
 		heizu[i].b_x = rePiece(heizu[i].m_x);
 		heizu[i].b_y = rePiece(heizu[i].m_y);
 		heizu[i].inStack = 0;
+		heizu[i].isCross = 0;
 	}
 }
 
@@ -1517,17 +2412,17 @@ void show()
 		}
 	}
 	//显示棋盘待定落子方框
-	if (istap == 1)
+	/*if (istap == 1)
 	{
-		int y = reDis(5);
-		int x = reDis(5);
+		int y = redis(5);
+		int x = redis(5);
 		int k = 12;
-		setlinecolor(BLUE);
+		setlinecolor(blue);
 		line(x - k, y - k, x + k, y - k);
 		line(x + k, y - k, x + k, y + k);
 		line(x + k, y + k, x - k, y + k);
 		line(x - k, y + k, x - k, y - k);
-	}
+	}*/
 	static int speed = 0;
 	static int k = 10;
 	static int flag1 = 0;
@@ -1565,13 +2460,28 @@ void show()
 				{
 					int y = reDis(i);
 					int x = reDis(j);
-					setcolor(BLUE);
+					setcolor(RED);
 					circle(x, y,k);
 				}
 			}
 		}
 	}
-	
+	//显示轮到哪一方走
+	if (isRed == 1)
+	{
+		setcolor(RED);
+		setfillcolor(RED);
+		int x = reDis(8);
+		int y = reDis(9);
+		fillcircle(x + 100, y, 25);
+	}
+	else {
+		setcolor(BLACK);
+		setfillcolor(BLACK);
+		int x = reDis(8);
+		int y = reDis(0);
+		fillcircle(x + 100, y, 25);
+	}
 	FlushBatchDraw();
 	Sleep(3);
 }
