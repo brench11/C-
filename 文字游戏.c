@@ -21,10 +21,12 @@ int judgeCon(int);
 int judge(int);
 void planetSerch();
 void searchDraw();
-void surfaceSearch();
 void searchHarm(int);
 void landingHarm(int);
 void dataHarm(int);
+void choiceUp();
+void pointSearch();
+void anomaliesDraw();
 int pass = 0;
 int atmosphere = 100;
 int gravity = 100;
@@ -52,6 +54,29 @@ int is_search_gra = 0;
 int is_search_tem = 0;
 int is_search_wat = 0;
 int is_search_res = 0;
+int moon = 0;
+int animal = 0;
+int plant = 0;
+int geological = 0;
+int aesthetics = 0;
+int possible_structures = 0;
+int civilization = 0;
+int welcome = 0;
+int is_point = 0;
+double point = 0;
+int afterLanding = 0;
+int afterConstruction = 0;
+int planets = 1;
+int atmsor = 0;
+int grasor = 0;
+int temsor = 0;
+int watsor = 0;
+int ressor = 0;
+int number = 0;
+double tech_level = 0;
+double techsor = 0;
+double cul_level = 0;
+double culsor = 0;
 const char* atm1[3] = {"!Corrosive","!Non-existent","!Radioactive"};
 const char* atm2 = "-Thin atmosphere";
 const char* atm3 = "+Breathable";
@@ -121,7 +146,27 @@ int main()
                 char c = _getch();
                 if (c == 'M')
                 {
-                    puts("进入事件");
+                    
+                     planet_atmosphere = 0;
+                     planet_gravity = 0;
+                     planet_temperature = 0;
+                     planet_water = 0;
+                     planet_resources = 0;
+                     is_search_atm = 0;
+                     is_search_gra = 0;
+                     is_search_tem = 0;
+                     is_search_wat = 0;
+                     is_search_res = 0;
+                     moon = 0;
+                     animal = 0;
+                     plant = 0;
+                     geological = 0;
+                     aesthetics = 0;
+                     possible_structures = 0;
+                     is_point = 0;
+                     civilization = 0;
+                     welcome = 0;
+                     planets++;
                     break; //离开当前循环，进入事件
                 }
                 else if (c == 'P') //发射探针
@@ -133,18 +178,259 @@ int main()
                         color(16);
                         continue;
                     }
+                    else if (is_point == 1)
+                    {
+                        puts("This planet has been searched using probes");
+                    }
                     else {
                         surface--;
-
+                        is_point = 1;
                         planetDraw();
                         puts("M(Move on)     P(Probe surface)     C(Found Colony)\n");
                         searchDraw();
-                        surfaceSearch();
+                        pointSearch();
+                        anomaliesDraw();
+
                     }
                 }
                 else if (c == 'C')//进入殖民进程
                 {
+                    if (is_point == 0)
+                    {
+                        pointSearch();
+                        anomaliesDraw();
+                    }
 
+                    if (landing > 50 && landing <= 80)
+                    {
+                        colonists -= 75;
+                    }
+                    else if (landing > 20 && landing <= 50)
+                    {
+                        colonists -= 175;
+                    }
+                    else if (landing <= 20)
+                    {
+                        colonists -= 300;
+                    }
+                    afterLanding = colonists;
+                    //建造模块
+                    if (animal == 3)
+                    {
+                        puts("Construction is boosted by 30 points if useful animals are found on the planet");
+                        while (1)
+                        {
+                            if (_kbhit())
+                            {
+                                char c = _getch();
+                                if (c == ' ')
+                                    break;
+                            }
+                        }
+                        construction += 30;
+                    }
+                   
+                    if (construction > 50 && construction <= 80)
+                    {
+                        colonists -= 75;
+                    }
+                    else if (construction > 20 && construction <= 50)
+                    {
+                        colonists -= 175;
+                    }
+                    else if (construction <= 20)
+                    {
+                        colonists -= 300;
+                    }
+                    afterConstruction = colonists;
+                    //计算异常损害
+                    if (moon == 1)
+                    {
+                        scientific -= 30;
+                    }
+                    else if (moon == 3)
+                    {
+                        scientific += 30;
+                    }
+
+                    if (animal == 1)
+                    {
+                        colonists -= 100;
+                    }
+
+                    if (plant == 1)
+                    {
+                        colonists -= 100;
+                    }
+                    else if (plant == 3)
+                    {
+                        colonists += 200;
+                    }
+
+                    if (geological == 1)
+                    {
+                        colonists -= 100;
+                    }
+                    else if (geological == 3)
+                    {
+                        colonists += 200;
+                    }
+
+                    if (aesthetics == 1)
+                    {
+                        cultural -= 20;
+                    }
+                    else if (geological == 3)
+                    {
+                        cultural += 20;
+                    }
+
+                    if (possible_structures == 1)
+                    {
+                        colonists -= 100;
+                    }
+                    else if(possible_structures==3) {
+                        scientific += 20;
+                        cultural += 20;
+                    }
+                    int enslaved;
+                    if (civilization != 0)
+                    {
+                        if (welcome == 3)
+                        {
+                            scientific += 30;
+                            cultural += 30;
+                        }
+                        else if (welcome == 1)
+                        {
+                            if (scientific < civilization * 20)
+                                enslaved = 1;//人类被奴役
+                        }
+                    }
+                    //大气得分
+                    if (planet_atmosphere == 1)
+                    {
+                        atmsor = 100;
+                    }
+                    else if (planet_atmosphere == 2)
+                    {
+                        atmsor = 250;
+                    }
+                    else if (planet_atmosphere == 3)
+                    {
+                        atmsor = 500;
+                    }
+                    //重力得分
+                    if (planet_gravity == 1)
+                    {
+                        grasor = 100;
+                    }
+                    else if (planet_gravity == 2)
+                    {
+                        grasor = 250;
+                    }
+                    else if (planet_gravity == 3)
+                    {
+                        grasor = 500;
+                    }
+                    //温度得分
+                    if (planet_temperature == 1)
+                    {
+                        temsor = 100;
+                    }
+                    else if (planet_temperature == 2)
+                    {
+                        temsor = 250;
+                    }
+                    else if (planet_temperature == 3)
+                    {
+                        temsor = 500;
+                    }
+
+                    //水得分
+                    if (planet_water == 1)
+                    {
+                        watsor = 100;
+                    }
+                    else if (planet_water == 2)
+                    {
+                        watsor = 250;
+                    }
+                    else if (planet_water == 3)
+                    {
+                        watsor = 500;
+                    }
+                    //资源得分
+                    if (planet_resources == 1)
+                    {
+                        ressor = 100;
+                    }
+                    else if (planet_resources == 2)
+                    {
+                        ressor = 250;
+                    }
+                    else if (planet_resources == 3)
+                    {
+                        ressor = 500;
+                    }
+                    //计算科技等级
+                    double res;
+                    if (planet_resources == 1)
+                    {
+                        res = 0.56;
+                    }
+                    else if (planet_resources == 2)
+                    {
+                        res = 0.95;
+                    }
+                    else if (planet_resources == 3)
+                    {
+                        res = 1.15;
+                    }
+                    tech_level = scientific * res;
+                    if (tech_level > 100)
+                    {
+                        techsor = 3000.0;
+                    }
+                    else if (tech_level > 50 && tech_level <= 100)
+                    {
+                        techsor = tech_level * 20;
+                    }
+                    else {
+                        techsor = tech_level * 10;
+                    }
+                    //计算文化得分;
+                    cul_level = cultural * res;
+                    if (cul_level > 100)
+                    {
+                        culsor = 3000.0;
+                    }
+                    else if (cul_level > 50 && cul_level <= 100)
+                    {
+                        culsor = cul_level * 20;
+                    }
+                    else {
+                        culsor = cul_level * 10;
+                    }
+                    point = techsor + culsor + afterConstruction + afterLanding + atmsor + grasor + temsor + watsor + ressor + scientific * 10 + cultural * 10;
+                    //开始打印
+                    puts("\n ------------------------------------------------------------------- \n");
+
+                    printf("Plants visited:%d\n\n", planets);
+                    puts("Score:");
+                    printf("%-40s%d\n", "Planet atmosphere", atmsor);
+                    printf("%-40s%d\n", "Planet gravity", grasor);
+                    printf("%-40s%d\n", "Planet temperature", temsor);
+                    printf("%-40s%d\n", "Planet water", watsor);
+                    printf("%-40s%d\n", "Planet resources", ressor);
+                    printf("%-40s%d\n", "Survuvors after landing", afterLanding);
+                    printf("%-40s%d\n", "Survuvors after construction", afterConstruction);
+                    printf("%-40s%llf.2\n", "Final techonogy", techsor);
+                    printf("%-40s%llf.2\n", "Final cultural", culsor);
+                    printf("%-40s%d\n", "Surviving scientific database", scientific*10);
+                    printf("%-40s%d\n", "Surviving cultural database", cultural * 10);
+                    puts("");
+                    printf("%-40s%llf.2", "Total", point);
                 }
             }
         }
@@ -190,7 +476,7 @@ int main()
                 }
                 break;
             }
-            else if (a > 50 && a <= 60)
+            else if (a > 50 && a <= 75)
             {
                 Device_decay();
                 while (1)
@@ -204,7 +490,7 @@ int main()
                 }
                 break;
             }
-            else if (a > 60 && a <= 90)
+            else if (a > 75 && a <= 90)
             {
                 Risk_or_Reward();
                 while (1)
@@ -233,15 +519,234 @@ int main()
             }
             
         }
-        if (pass == 0)
+        if (number == 3)
         {
-            while (1)//飞船升级
+            if (pass == 0)
             {
-                break;
+                choiceUp();
+            }
+            else {
+                pass = 0;
+            }
+
+            number = 0;
+       }
+        else {
+            number++;
+        }
+    }
+}
+void choiceUp() {
+    puts("Choose a device to upgrade");
+    puts("A.atmosphere  B.gravity  C.temperature   D.water  E.resources");
+    while (1)
+    {
+        char c;
+        if (_kbhit())
+        {
+            c = _getch();
+            if (c == 'A')
+            {
+                if (atmosphere_level == 3)
+                {
+                    puts("The current device is at full level!");
+                    continue;
+                }
+                else {
+                    atmosphere_level++;
+                    break;
+                }
+            }
+            else if (c == 'B')
+            {
+                if (gravity_level == 3)
+                {
+                    puts("The current device is at full level!");
+                    continue;
+                }
+                else {
+                    gravity_level++;
+                    break;
+                }
+            }
+            else if (c == 'C')
+            {
+                if (temperature_level == 3)
+                {
+                    puts("The current device is at full level!");
+                    continue;
+                }
+                else {
+                    temperature_level++;
+                    break;
+                }
+            }
+            else if (c == 'D')
+            {
+                if (water_level == 3)
+                {
+                    puts("The current device is at full level!");
+                    continue;
+                }
+                else {
+                    water_level++;
+                    break;
+                }
+            }
+            else if (c == 'E')
+            {
+                if (resources_level == 3)
+                {
+                    puts("The current device is at full level!");
+                    continue;
+                }
+                else {
+                    resources_level++;
+                    break;
+                }
             }
         }
-        else {
-            pass = 0;
+    }
+}
+void anomaliesDraw()
+{
+    puts("");
+    if (moon != 0)
+    {
+        printf("%-25s", "Moon");
+        if (moon == 1)
+        {
+            printf("%-20s", "Bad");
+            puts("");
+        }
+        else if (moon == 2)
+        {
+            printf("%-20s", "Neutral");
+            puts("");
+        }
+        else if (moon == 3)
+        {
+            printf("%-20s","Good");
+            puts("");
+        }
+    }
+
+    if (animal != 0)
+    {
+        printf("%-25s", "animal");
+        if (animal == 1)
+        {
+            printf("%-20s", "Bad");
+            puts("");
+        }
+        else if (animal == 2)
+        {
+            printf("%-20s", "Neutral");
+            puts("");
+        }
+        else if (animal == 3)
+        {
+            printf("%-20s", "Good");
+            puts("");
+        }
+    }
+
+    if (plant != 0)
+    {
+        printf("%-25s", "plant");
+        if (plant == 1)
+        {
+            printf("%-20s", "Bad");
+            puts("");
+        }
+        else if (plant == 2)
+        {
+            printf("%-20s", "Neutral");
+            puts("");
+        }
+        else if (plant == 3)
+        {
+            printf("%-20s", "Good");
+            puts("");
+        }
+    }
+
+    if (geological != 0)
+    {
+        printf("%-25s", "geological");
+        if (geological == 1)
+        {
+            printf("%-20s", "Bad");
+            puts("");
+        }
+        else if (geological == 2)
+        {
+            printf("%-20s", "Neutral");
+            puts("");
+        }
+        else if (geological == 3)
+        {
+            printf("%-20s", "Good");
+            puts("");
+        }
+    }
+
+    if (aesthetics != 0)
+    {
+        printf("%-25s", "aesthetics");
+        if (aesthetics == 1)
+        {
+            printf("%-20s", "Bad");
+            puts("");
+        }
+        else if (aesthetics == 2)
+        {
+            printf("%-20s", "Neutral");
+            puts("");
+        }
+        else if (aesthetics == 3)
+        {
+            printf("%-20s", "Good");
+            puts("");
+        }
+    }
+
+    if (possible_structures != 0)
+    {
+        printf("%-25s", "Possible structures");
+        if (possible_structures == 1)
+        {
+            printf("%-20s", "Bad");
+            puts("");
+        }
+        else if (possible_structures == 2)
+        {
+            printf("%-20s", "Neutral");
+            puts("");
+        }
+        else if (possible_structures == 3)
+        {
+            printf("%-20s", "Good");
+            puts("");
+        }
+    }
+    //外星文明
+    if (civilization != 0)
+    {
+        printf("%-25s", "civilization");
+        printf("Level:%d\n", civilization);
+        printf("%25s", " ");
+        if (welcome == 1)
+        {
+            puts("Nnwelcoming");
+        }
+        else if (welcome == 2)
+        {
+            puts("Neutral");
+        }
+        else
+        {
+            puts("Welcoming");
         }
     }
 }
@@ -293,9 +798,187 @@ void dataHarm(int x)
     }
     return;
 }
-void surfaceSearch()
-{
+void pointSearch() {
+    if (is_search_atm == 0)
+    {
+        is_search_atm == 1;
+        int x = rand() % 10 + 1;
+        if (x > 3)
+        {
+            planet_atmosphere = 2;
+        }
+        else {
+            planet_atmosphere = 3;
+        }
+    }
+    else if (is_search_gra == 0)
+    {
+        is_search_gra = 1;
+        int x = rand() % 10 + 1;
+        if (x > 3)
+        {
+            planet_gravity = 2;
+        }
+        else {
+            planet_gravity = 3;
+        }
+    }
+    else if (is_search_tem == 0)
+    {
+        is_search_tem = 1;
+        int x = rand() % 10 + 1;
+        if (x > 3)
+        {
+            planet_temperature = 2;
+        }
+        else {
+            planet_temperature = 3;
+        }
+    }
+    else if (is_search_wat == 0)
+    {
+        is_search_wat = 1;
+        int x = rand() % 10 + 1;
+        if (x > 3)
+        {
+            planet_water = 2;
+        }
+        else {
+            planet_water = 3;
+        }
+    }
+    else if (is_search_res == 0)
+    {
+        is_search_res = 1;
+        int x = rand() % 10 + 1;
+        if (x > 3)
+        {
+            planet_resources = 2;
+        }
+        else {
+            planet_resources = 3;
+        }
+    }
+    //开始探索异常后
+    //月亮
+    int a = rand() % 100 + 1;
+    if (a > 35)
+    {
+        int b = rand() % 100 + 1;
+        if (b <= 30)
+        {
+            moon = 1;
+        }
+        else if (b > 30 && b <= 50)
+        {
+            moon = 2;
+        }
+        else {
+            moon = 3;
+        }
+    }
+    a = rand() % 100 + 1;
+    if (a > 35)
+    {
+        int b = rand() % 100 + 1;
+        if (b <= 30)
+        {
+            animal = 1;
+        }
+        else if (b > 30 && b <= 50)
+        {
+            animal = 2;
+        }
+        else {
+            animal = 3;
+        }
+    }
 
+    a = rand() % 100 + 1;
+    if (a > 35)
+    {
+        int b = rand() % 100 + 1;
+        if (b <= 30)
+        {
+            plant = 1;
+        }
+        else if (b > 30 && b <= 50)
+        {
+            plant = 2;
+        }
+        else {
+            plant = 3;
+        }
+    }
+
+    a = rand() % 100 + 1;
+    if (a > 35)
+    {
+        int b = rand() % 100 + 1;
+        if (b <= 30)
+        {
+            geological = 1;
+        }
+        else if (b > 30 && b <= 50)
+        {
+            geological = 2;
+        }
+        else {
+            geological = 3;
+        }
+    }
+
+    a = rand() % 100 + 1;
+    if (a > 35)
+    {
+        int b = rand() % 100 + 1;
+        if (b <= 30)
+        {
+            aesthetics = 1;
+        }
+        else if (b > 30 && b <= 50)
+        {
+            aesthetics = 2;
+        }
+        else {
+            aesthetics = 3;
+        }
+    }
+    
+    a = rand() % 100 + 1;
+    if (a > 35)
+    {
+        int b = rand() % 100 + 1;
+        if (b <= 30)
+        {
+            possible_structures = 1;
+        }
+        else if (b > 30 && b <= 50)
+        {
+            possible_structures = 2;
+        }
+        else {
+            possible_structures = 3;
+        }
+    }
+    //探索外星人
+    a = rand() % 100 + 1;
+    if (a > 50)
+    {
+        civilization = rand() % 6 + 1;
+        int b = rand() % 10 + 1;
+        if (b <= 2)
+        {
+            welcome = 1;
+        }
+        else if (b > 2 && b <= 7)
+        {
+            welcome = 2;
+        }
+        else {
+            welcome = 3;
+        }
+    }
 }
 void planetSerch() {
     //大气搜索
@@ -862,7 +1545,7 @@ void Choice_of_Damage() {
             "dust in its path. Passing through the dust would likely mean several high-velocity collisions with dust particles. The AI "
             "could execute an emergency course change to avoid the dust, but then the seedship would pass this system by and arrive at an "
             "effectively random one, without benefiting from the upgrades to its scanners.");
-        puts("A.Plough through the dust ");
+        puts("A.Plough through the dust  B.Emergency course change");
         while (1)
         {
             char c;
@@ -1073,24 +1756,260 @@ void Device_decay() {
                 {
                     puts("The AI focuses on preserving the landing system, and allows the construction system to decay.");
                     int x = rand() % 10 + 15;
-                    construction -= x;
+                    landing -= x;
+                    break;
                 }
                 else if (c == 'B')
                 {
                     puts("The AI focuses on preserving the construction system, and allows the landing system to decay.");
                     int x = rand() % 10 + 15;
-                    landing -= x;
+                    construction -= x;
+                    break;
                 }
             }
         }
     }
 }
 void Risk_or_Reward() {
-
+    color(1);
+    puts("Risk");
+    color(16);
+    int a = rand() % 1;
+    if (a == 1)
+    {
+        puts("Protoplanetary Disk");
+        puts("The seedship's course takes it close to a newly-formed star that is still surrounded by a protoplanetary disc: "
+            "a whirling chaos of incandescent gas and molten rocks that the young star's gravity has gathered from the star-forming "
+            "cloud, and which is now undergoing the countless violent collisions that will eventually form it into a planetary system. "
+            "There can be no home for humanity here, but passing through the disc would give the AI enough data about planet formation to "
+            "upgrade one of its scanners. It is a dangerous region, however, and passing through would risk collision with a planetesimal.");
+        puts("A.Change course to pass through the disc   B.gnore the protoplanetary disc");
+        while (1)
+        {
+            char c;
+            if (_kbhit())
+            {
+                c = _getch();
+                if (c == 'A')
+                {
+                    int x = rand() % 2;
+                    if (x == 0)
+                    {
+                        puts("Success!");//
+                        choiceUp();
+                        break;
+                    }
+                    else if (x == 1)
+                    {
+                        puts("Faild!");
+                        puts("Choose a damaged device");
+                        puts("A.colonists  B.atmosphere.  C.gravity   D.temperature  E.water  F.resources");
+                        puts("G.landing   H.construction   I.scientific    J.scientific ");
+                        int harm = rand() % 10 + 15;
+                        while (1)
+                        {
+                            char cc;
+                            if (_kbhit());
+                            {
+                                cc = _getch();
+                                if (cc == 'A')
+                                {
+                                    colonists -= harm * 9;
+                                    break;
+                                }
+                                else if (cc == 'B')
+                                {
+                                    atmosphere -= harm;
+                                    break;
+                                }
+                                else if (cc == 'C')
+                                {
+                                  
+                                    gravity -= harm;
+                                    break;
+                                }
+                                else if (cc == 'D')
+                                {
+                                    temperature -= harm;
+                                    break;
+                                }
+                                else if (cc == 'E')
+                                {
+                                    water -= harm;
+                                    break;
+                                }
+                                else if (cc == 'F')
+                                {
+                                    resources -= harm;
+                                    break;
+                                }
+                                else if (cc == 'G')
+                                {
+                                    landing -= harm;
+                                    break;
+                                }
+                                else if (cc == 'H')
+                                {
+                                    construction -= harm;
+                                    break;
+                                }
+                                else if (cc == 'I')
+                                {
+                                    scientific -= harm;
+                                    break;
+                                }
+                                else if (cc == 'J')
+                                {
+                                    cultural -= harm;
+                                    break;
+                                }
+                                
+                            }
+                        }
+                    }
+                    break;
+                }
+                else if (c == 'B')
+                {
+                    puts("nothing happen!");
+                    break;
+                }   
+            }
+        }
+    }
 }
 void otherEvents() {
+    color(13);
+    puts("Special events");
+    color(16);
+    int a = rand() % 2;
+    if (a == 0)
+    {
+        puts("Found a Metallic Asteroid");
+        puts("A.launch a surface probe to it   B.Ignored");
+        while (1)
+        {
+            char c;
+            if (_kbhit())
+            {
+                c = _getch();
+                if (c == 'A')
+                {
+                    if (surface == 0)
+                    {
+                        puts("The probe has been used up");
+                    }
+                    else {
+                        surface--;
+                        int k = rand() % 2;
+                        if (k == 0)
+                        {
+                            puts("Search failed");
+                        }
+                        else {
+                            puts("Discover the magic, continue or leave");
+                            puts("A.continue    B.Leave");
+                            while (1)
+                            {
+                                char cc;
+                                if (_kbhit())
+                                {
+                                    cc = _getch();
+                                    if (cc == 'A')
+                                    {
+                                        int kk = rand() % 10 + 1;
+                                        if (kk <= 3)
+                                        {
+                                            puts("Failure, equipment damage");
+                                            int mm = rand() % 10 + 15;
+                                            searchHarm(mm);
+                                        }
+                                        else { //数据库增加
+                                            puts("Database upgrade");
+                                            int mm = rand() % 2;
+                                            if (mm == 0)
+                                            {
+                                                scientific += 25;
+                                            }
+                                            else {
+                                                cultural += 25;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                    else if (cc == 'B')
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+                else if (c == 'B')
+                {
+                    break;
+                }
+            }
+        }
 
+    }
+    else if (a == 2)
+    {
+        puts("Unusual Astronomical Readings");
+        puts("A.Search    B.Ignored");
+        while (1)
+        {
+            char c;
+            if (_kbhit()) {
+                c = _getch();
+                if (c == 'A')
+                {
+                    puts("Found aliens, aliens give you gifts");
+                    puts("A.Accept    B.Reject ");
+                    while (1)
+                    {
+                        char cc;
+                        if (_kbhit())
+                        {
+                            cc = _getch();
+                            if (cc == 'A')
+                            {
+                                int x = rand() % 2;
+                                if (x == 0)
+                                {
+                                    colonists -= 300;
+                                    scientific += 20;
+                                    cultural += 20;
+                                }
+                                else {
+                                    colonists -= 200;
+                                }
+                                break;
+                            }
+                            else if (cc == 'B')
+                            {
+                                int x = rand() % 100 + 1;
+                                if (x <= 25)
+                                {
+                                    searchHarm(25);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                else if (c == 'B')
+                {
+                    break;
+                }
+            }
+        }
+    }
 }
+
 void planetDraw()
 {
     system("cls");
@@ -1118,7 +2037,7 @@ void planetDraw()
     color(16);
     printf("     Construction:          ");
     setcolor(judge(construction));
-    printf("%-3d%%", landing);
+    printf("%-3d%%", construction);
     color(16);
     puts("     |");
 
@@ -1176,7 +2095,7 @@ int judgeCon(int a)
 }
 int judge(int a)
 {
-    if (a == 100) //绿色
+    if (a >= 100) //绿色
         return 0;
     if (a >= 10 && a < 100) //黄色
         return 1;
